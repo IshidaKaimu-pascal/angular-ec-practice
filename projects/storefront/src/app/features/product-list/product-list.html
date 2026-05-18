@@ -1,0 +1,69 @@
+<!-- 検索ボックス -->
+<!-- (input) イベント: ユーザーがキーを打つたびに発火 -->
+<!-- $event は input イベントのオブジェクトそのもの。onSearchInput に渡される -->
+<div class="search-area">
+  <mat-form-field appearance="outline" class="search-field">
+    <mat-label>商品を検索</mat-label>
+    <input matInput type="search" (input)="onSearchInput($event)" placeholder="商品名で検索" />
+    <mat-icon matSuffix>search</mat-icon>
+  </mat-form-field>
+</div>
+
+<!-- 商品一覧 -->
+<!-- paginatedProducts() は filteredProducts() からページ分だけ切り出した配列を返す -->
+<div class="product-grid">
+  @for (product of paginatedProducts(); track product.id) {
+    <mat-card class="product-card">
+      <!-- @if: 画像URLがある場合のみ表示 -->
+      @if (product.imageUrl) {
+        <img mat-card-image [src]="product.imageUrl" [alt]="product.name" />
+      }
+
+      <mat-card-content>
+        <!-- 商品名 (商品詳細へ遷移させるリンク)-->
+        <h3 class="product-name">
+          <a [routerLink]="['/products', product.id]">{{ product.name }}</a>
+        </h3>
+        <!-- | number は数値フォーマットのパイプ。3桁区切りで表示される -->
+        <p class="product-price">¥{{ product.price | number }}</p>
+
+        <!-- 在庫が0の場合に在庫切れと表示 -->
+        @if(product.stock === 0){
+          <p class="out-of-stock">在庫切れ</p>
+        }@else {
+          <p class="stock">在庫:{{product.stock}}</p>
+        }
+      </mat-card-content>
+
+      <mat-card-actions>
+        <!-- (click) はイベントバインディング: クリック時に addToCart(product) を呼ぶ -->
+        <!-- [disabled] = "product.stock === 0" は在庫が0の場合にボタンを無効化する -->
+        <button mat-flat-button color="primary" [disabled] = "product.stock === 0" (click)="addToCart(product)">
+          カートに追加
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  } @empty {
+    <!-- @empty: 配列が空(0件)だった時にだけ表示される -->
+    <p class="empty-message">商品が見つかりませんでした</p>
+  }
+</div>
+
+<!-- ─────────────────────────────────────────────────────── -->
+<!-- ページング: Material 標準の paginator                          -->
+<!--   [length]:           総件数。これを元に「全体何ページか」を計算   -->
+<!--   [pageSize]:         1ページの件数(現在値)                      -->
+<!--   [pageSizeOptions]:  ページサイズ選択肢のドロップダウン          -->
+<!--   [pageIndex]:        現在のページ番号(0始まり)                  -->
+<!--   (page):             ページ変更イベント。onPageChange に渡す    -->
+<!-- 検索結果が0件の時は paginator を隠す(表示する意味が無い)         -->
+<!-- ─────────────────────────────────────────────────────── -->
+@if (filteredProducts().length > 0) {
+  <mat-paginator
+    [length]="filteredProducts().length"
+    [pageSize]="pageSize()"
+    [pageSizeOptions]="[4, 8, 12]"
+    [pageIndex]="pageIndex()"
+    (page)="onPageChange($event)"
+  />
+}

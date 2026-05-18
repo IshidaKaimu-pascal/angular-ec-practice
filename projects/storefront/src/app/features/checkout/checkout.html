@@ -1,0 +1,69 @@
+<div class="checkout-container">
+  <h1>購入手続き</h1>
+    @if(cartService.items().length === 0){
+      <div class="empty-cart">
+        <p>カートが空です。先に商品をカートに入れてください。</p>
+        <a mat-flat-button color="primary" routerLink="/">商品一覧へ</a>
+      </div>
+    }@else{
+
+     <!-- 注文内容 -->
+     <mat-card class="section">
+       <h2>注文内容</h2>
+       @for (item of cartService.items(); track item.product.id) {
+         <div class="order-line">
+           <!-- 商品画像のサムネイル（imageUrl がある時だけ表示） -->
+           @if (item.product.imageUrl) {
+             <img class="line-image" [src]="item.product.imageUrl" [alt]="item.product.name" />
+           }
+           <span class="line-name">{{ item.product.name }} × {{ item.quantity }}</span>
+           <span class="line-subtotal">¥{{ item.product.price * item.quantity | number }}</span>
+         </div>
+       }
+       <mat-divider></mat-divider>
+       <div class="total-line">
+         <span class="total-label">合計</span>
+         <span class="total-amount">¥{{ cartService.totalPrice() | number }}</span>
+       </div>
+     </mat-card>
+
+     <!-- お届け先 -->
+     <mat-card class="section">
+       <h2>お届け先</h2>
+       <p class="user-name">{{ authService.currentUser().name }} 様</p>
+         @if(authService.currentUser().address){
+            <p class="address">{{ authService.currentUser().address}}</p>
+         }@else {
+            <p class="warning">error:住所が未登録です。設定画面から登録してください。</p>
+         }
+        </mat-card>
+
+     <!-- お支払い方法（Reactive Forms） -->
+     <!-- [formGroup]="form" でTSの FormGroup とテンプレートを紐付ける -->
+     <!-- (ngSubmit) は <form> 専用のイベント。Enter キーや submit ボタンで発火 -->
+     <form [formGroup]="form" (ngSubmit)="onSubmit()">
+       <mat-card class="section">
+         <h2>お支払い方法</h2>
+         <!-- formControlName="paymentMethod" で TSの FormControl と紐付け -->
+         <mat-radio-group formControlName="paymentMethod" class="radio-group">
+           <mat-radio-button value="cash_on_delivery">代金引換</mat-radio-button>
+           <mat-radio-button value="convenience_store_payment">コンビニ決済</mat-radio-button>
+         </mat-radio-group>
+       </mat-card>
+
+       <div class="checkout-actions">
+ 
+         <a mat-stroked-button routerLink="/cart">キャンセル</a>
+        
+         <!-- [disabled] ="form.invalid || submitting" はフォームの入力値が正しくない場合か送信中の場合にボタンを無効化する -->
+         <button mat-flat-button color="primary" type="submit" [disabled] ="form.invalid || submitting">
+           @if (submitting) {
+             注文処理中...
+           } @else {
+             注文を確定する
+           }
+         </button>
+       </div>
+     </form>
+    }  
+</div>

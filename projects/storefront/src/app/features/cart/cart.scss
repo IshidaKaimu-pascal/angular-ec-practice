@@ -1,0 +1,105 @@
+:host {
+  display: block;
+  padding: 24px;
+  max-width: 900px;
+  // margin: 0 auto で中央寄せ
+  margin: 0 auto;
+}
+
+h1 {
+  margin: 0 0 24px;
+  font-size: 1.5rem;
+}
+
+.cart-item {
+  margin-bottom: 16px;
+}
+
+.item-row {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.item-image {
+  width: 80px;
+  height: 80px;
+  // object-fit: cover で画像比率を保ちつつ枠いっぱいに表示
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.item-info {
+  // flex: 1 で残り幅をこの要素が吸収する
+  flex: 1;
+}
+
+.item-name {
+  margin: 0 0 4px;
+  font-size: 1rem;
+}
+
+.item-price {
+  margin: 0 0 8px;
+  color: #666;
+  font-size: 0.875rem;
+}
+
+.quantity-control {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.quantity {
+  min-width: 32px;
+  text-align: center;
+  font-weight: 500;
+}
+
+.item-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.subtotal {
+  margin: 0;
+  font-weight: 500;
+}
+
+.empty-cart {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 48px 0;
+  color: #666;
+}
+
+.summary {
+  display: flex;
+  justify-content: flex-end;
+  align-items: baseline;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.total-label {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.total-amount {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+.cart-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 24px;
+  gap: 16px;
+}

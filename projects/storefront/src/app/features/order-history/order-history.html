@@ -1,0 +1,45 @@
+<div class="history-container">
+  <h1>購入履歴</h1>
+  <!-- mat-accordion: 複数の expansion-panel をまとめるラッパー -->
+  <!-- multi: 複数同時展開を許可するか(falseだと1つ開くと他が閉じる)。デフォルトは false -->
+  <mat-accordion multi>
+    @for (order of orders(); track order.id) {
+      <!-- mat-expansion-panel: クリックで展開/折りたたみできるパネル -->
+      <mat-expansion-panel class="order-panel">
+        <!-- ヘッダー部分(常に表示) -->
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <span class="order-id">注文 #{{ order.id }}</span>
+            <span class="order-date">{{ order.orderedAt | date:'yyyy/MM/dd HH:mm' }}</span>
+          </mat-panel-title>
+          <mat-panel-description>
+            <span class="order-total">¥{{ order.totalAmount | number }}</span>
+            <span class="order-payment">{{ formatPaymentMethod(order.paymentMethod) }}</span>
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <!-- 展開時のボディ -->
+        <div class="order-details">
+          <p class="shipping-address">配送先: {{ order.shippingAddress }}</p>
+
+          <h3 class="details-heading">注文内容</h3>
+          @for (item of order.items; track item.id) {
+            <div class="item-row">
+              @if (item.product?.imageUrl) {
+                <img class="item-image" [src]="item.product?.imageUrl" [alt]="item.product?.name" />
+              }
+              <span class="item-name">{{ item.product?.name }} × {{ item.quantity }}</span>
+              <span class="item-subtotal">¥{{ item.unitPrice * item.quantity | number }}</span>
+            </div>
+          }
+        </div>
+      </mat-expansion-panel>
+    }@empty{
+      <!-- 空(0件)なら @empty ブロック側が表示される -->
+      <div class="empty-history">
+        <p>購入履歴がありません</p>
+        <a mat-flat-button color="primary" routerLink="/">商品一覧へ</a>
+      </div>
+    }
+  </mat-accordion>
+</div>

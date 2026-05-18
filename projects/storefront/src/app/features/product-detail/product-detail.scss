@@ -1,0 +1,108 @@
+:host {
+  display: block;
+  padding: 24px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.back-link {
+  margin-bottom: 16px;
+}
+
+.product-card {
+  padding: 16px;
+}
+
+// 商品の本体エリア: 画像と情報を横並びに
+.content {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.product-image {
+  // 画像エリアを最大幅 320px に
+  width: 100%;
+  max-width: 320px;
+  height: auto;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.info {
+  flex: 1; // 残り幅をすべて使う
+}
+
+.name {
+  margin: 0 0 12px;
+  font-size: 1.5rem;
+}
+
+.description {
+  margin: 0 0 16px;
+  color: #555;
+  line-height: 1.6;
+}
+
+.price {
+  margin: 0 0 8px;
+  font-size: 1.6rem;
+  font-weight: 600;
+}
+
+.out-of-stock {
+  margin: 0;
+  color: #d32f2f;
+  font-weight: 500;
+}
+
+.stock {
+  margin: 0;
+  color: #666;
+}
+
+// 数量コントロール + カート追加 のエリア
+.cart-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #eee;
+}
+
+.quantity-control {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.qty-label {
+  margin-right: 8px;
+  color: #555;
+}
+
+.quantity {
+  min-width: 32px;
+  text-align: center;
+  font-weight: 500;
+  font-size: 1.1rem;
+}
+
+.loading {
+  text-align: center;
+  padding: 48px 0;
+  color: #666;
+}
+
+// 画面が狭い時(スマホ等): 画像と情報を縦並びに
+@media (max-width: 600px) {
+  .content {
+    flex-direction: column;
+  }
+  .product-image {
+    max-width: 100%;
+  }
+}

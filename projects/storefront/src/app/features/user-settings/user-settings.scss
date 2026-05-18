@@ -1,0 +1,29 @@
+:host {
+  display: block;
+  padding: 24px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+h1 {
+  margin: 0 0 24px;
+  font-size: 1.5rem;
+}
+
+.section {
+  padding: 16px;
+}
+
+// mat-form-field を縦並びで等幅にする
+.field {
+  display: block;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 24px;
+  gap: 16px;
+}

@@ -1,0 +1,63 @@
+<div class="detail-container">
+  <!-- 戻るボタン: 商品一覧へ -->
+  <a mat-button routerLink="/" class="back-link">
+    <mat-icon>arrow_back</mat-icon>
+    商品一覧へ
+  </a>
+
+  <!-- @if で product が取得済み(null じゃない)の時だけ詳細を表示 -->
+  <!-- @else で未取得 or 取得失敗時の表示 -->
+  @if (product(); as p) {
+    <!-- as p: @if 内で product() の戻り値を p という名前で扱える(毎回 product() を呼ばずに済む) -->
+    <mat-card class="product-card">
+      <div class="content">
+        <!-- 画像エリア -->
+        @if (p.imageUrl) {
+          <img class="product-image" [src]="p.imageUrl" [alt]="p.name" />
+        }
+
+        <!-- 情報エリア -->
+        <div class="info">
+          <h1 class="name">{{ p.name }}</h1>
+
+          @if (p.description) {
+            <p class="description">{{ p.description }}</p>
+          }
+
+          <p class="price">¥{{ p.price | number }}</p>
+
+          <!-- 在庫表示 -->
+          @if (p.stock === 0) {
+            <p class="out-of-stock">在庫切れ</p>
+          } @else {
+            <p class="stock">在庫: {{ p.stock }}</p>
+          }
+        </div>
+      </div>
+
+      <!-- 数量コントロール + カート追加 -->
+      @if (p.stock > 0) {
+        <div class="cart-actions">
+          <div class="quantity-control">
+            <span class="qty-label">数量:</span>
+            <button mat-icon-button (click)="decrement()" [disabled]="quantity() <= 1" aria-label="減らす">
+              <mat-icon>remove</mat-icon>
+            </button>
+            <span class="quantity">{{ quantity() }}</span>
+            <button mat-icon-button (click)="increment()" [disabled]="quantity() >= p.stock" aria-label="増やす">
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
+          <!-- カート追加ボタン -->
+          <button mat-flat-button color="primary" (click) = "addToCart()">
+            <mat-icon>shopping_cart</mat-icon>
+            カートに追加
+          </button>
+        </div>
+      }
+    </mat-card>
+  } @else {
+    <!-- product() がまだ null = データ取得中 or 取得失敗 -->
+    <p class="loading">読み込み中...</p>
+  }
+</div>

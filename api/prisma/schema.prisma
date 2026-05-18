@@ -1,0 +1,89 @@
+// Prismaスキーマファイル
+// このファイルに書いたモデルが、MariaDB(MySQL互換)の実テーブルに変換される（migrate実行時）
+// 詳細: https://pris.ly/d/prisma-schema
+
+// Prismaクライアント（TypeScriptで使う型付きDBアクセサ）の生成設定
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+// DBの種類と接続先（.env の DATABASE_URL を参照）
+// MariaDB は MySQL 互換のため provider は "mysql" を使う
+datasource db {
+  provider = "mysql"
+}
+
+// ============================================================
+// User: 顧客と管理者を兼用するテーブル（role で区別）
+// ============================================================
+model User {
+  id        Int      @id @default(autoincrement())  // 主キー（自動採番）
+  name      String
+  email     String   @unique                         // ログインID（重複不可）
+  password  String                                   // bcryptハッシュ化済み文字列を保存
+  role      String   @default("customer")            // "customer" | "admin"
+  address   String?                                  // ? は nullable（顧客のみ使用、管理者はnull）
+  phone     String?
+  createdAt DateTime @default(now())                 // 作成日時を自動セット
+  updatedAt DateTime @updatedAt                      // 更新時に自動で現在時刻に
+  orders    Order[]                                  // 1人のユーザーは複数の注文を持つ（1対多）
+}
+
+// ============================================================
+// Category: 商品カテゴリ
+// ============================================================
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  products  Product[]                                // 1カテゴリは複数の商品を持つ
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+// ============================================================
+// Product: 商品
+// ============================================================
+model Product {
+  id          Int         @id @default(autoincrement())
+  name        String
+  description String?
+  price       Int                                    // 円単位の整数（小数点なし）
+  imageUrl    String?
+  stock       Int         @default(0)                // 在庫数
+  categoryId  Int                                    // FK: Category.id を参照
+  category    Category    @relation(fields: [categoryId], references: [id])
+  orderItems  OrderItem[]                            // この商品が含まれる注文明細
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+// ============================================================
+// Order: 注文（売上1件 = ユーザー1人の購入トランザクション）
+// 購入履歴画面で表示する「売上ID」「売上日時」「購入者」はここに集約
+// ============================================================
+model Order {
+  id              Int         @id @default(autoincrement())  // 売上ID
+  userId          Int                                          // 購入者ID（FK）
+  user            User        @relation(fields: [userId], references: [id])
+  totalAmount     Int                                          // 合計金額（円）
+  paymentMethod   String                                       // "credit_card" | "cash_on_delivery" など
+  shippingAddress String                                       // 配送先住所（注文時点をスナップショット保存）
+  orderedAt       DateTime    @default(now())                  // 売上日時
+  items           OrderItem[]                                  // この注文に含まれる商品明細（1対多）
+}
+
+// ============================================================
+// OrderItem: 注文明細（1注文に複数行ぶら下がる）
+// 「Orderテーブルと別にする理由」: 1注文で複数商品を買えるため
+// ============================================================
+model OrderItem {
+  id        Int     @id @default(autoincrement())
+  orderId   Int                                      // FK: 親Order
+  order     Order   @relation(fields: [orderId], references: [id])
+  productId Int                                      // FK: 商品
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int                                      // 数量
+  unitPrice Int                                      // 購入時点の単価をスナップショット保存
+                                                     // （後で商品価格を変えても履歴は影響を受けない）
+}

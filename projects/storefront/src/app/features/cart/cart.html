@@ -1,0 +1,69 @@
+<div class="cart-container">
+  <h1>カート</h1>
+
+  <!-- @for で cartService.items() の中身を順に表示 -->
+  <!-- 空(0件)なら @empty ブロック側が表示される -->
+  @for (item of cartService.items(); track item.product.id) {
+    <mat-card class="cart-item">
+      <div class="item-row">
+        <!-- 商品画像 -->
+        @if (item.product.imageUrl) {
+          <img class="item-image" [src]="item.product.imageUrl" [alt]="item.product.name" />
+        }
+
+        <!-- 商品情報 -->
+        <div class="item-info">
+          <h3 class="item-name">{{ item.product.name }}</h3>
+          <p class="item-price">¥{{ item.product.price | number }} / 個</p>
+
+          <!-- 数量コントロール -->
+          <div class="quantity-control">
+            <button mat-icon-button (click)="decrement(item.product.id, item.quantity)" aria-label="減らす">
+              <mat-icon>remove</mat-icon>
+            </button>
+            <span class="quantity">{{ item.quantity }}</span>
+            <button mat-icon-button (click)="increment(item.product.id, item.quantity)" aria-label="増やす">
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <!-- 小計と削除 -->
+        <div class="item-actions">
+          <!-- 小計 = 単価 × 数量 -->
+          <p class="subtotal">小計: ¥{{ item.product.price * item.quantity | number }}</p>
+
+          <!-- 削除ボタン -->
+          <button mat-stroked-button color="warn" (click) = "remove(item.product.id)">
+            <mat-icon>delete</mat-icon>
+            削除
+          </button>
+        </div>
+      </div>
+    </mat-card>
+  } @empty {
+    <!-- カートが空の場合の表示 -->
+    <div class="empty-cart">
+      <p>カートは空です</p>
+      <a mat-flat-button color="primary" routerLink="/">商品一覧へ</a>
+    </div>
+  }
+
+  <!-- 商品があれば合計と購入ボタンを表示。1件以上ある時だけ意味のある表示 -->
+  @if (cartService.items().length > 0) {
+    <mat-divider></mat-divider>
+
+    <div class="summary">
+      <p class="total-label">合計</p>
+      <p class="total-amount">¥{{ cartService.totalPrice() | number }}</p>
+    </div>
+
+    <div class="cart-actions">
+      <a mat-stroked-button routerLink="/">商品一覧に戻る</a>
+      <a mat-flat-button color="primary" routerLink="/checkout">
+        購入手続きへ
+        <mat-icon>arrow_forward</mat-icon>
+      </a>
+    </div>
+  }
+</div>

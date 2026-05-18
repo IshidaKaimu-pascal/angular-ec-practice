@@ -1,0 +1,50 @@
+<div class="settings-container">
+  <h1>ユーザー設定</h1>
+
+  <!-- [formGroup]: TS の FormGroup とテンプレートを紐付け -->
+  <!-- (ngSubmit): フォーム送信時のイベントバインディング -->
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <mat-card class="section">
+      <!-- mat-form-field: Material 標準のテキスト入力枠。appearance="outline" で外枠スタイル -->
+      <!-- formControlName: TS の FormControl と紐付ける属性 -->
+      <mat-form-field appearance="outline" class="field">
+        <mat-label>名前</mat-label>
+        <input matInput formControlName="name" placeholder="例: 山田太郎" />
+        <!-- mat-error: バリデーション NG の時に表示されるエラーメッセージ -->
+        @if (form.controls.name.invalid && form.controls.name.touched) {
+          <mat-error>名前は必須です</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="field">
+        <mat-label>メールアドレス</mat-label>
+        <input matInput type="email" formControlName="email" placeholder="例: taro@example.com" />
+        @if (form.controls.email.invalid && form.controls.email.touched) {
+          <mat-error>有効なメールアドレスを入力してください</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="field">
+        <mat-label>住所</mat-label>
+        <input matInput formControlName="address" placeholder="例: 東京都渋谷区..." />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="field">
+        <mat-label>電話番号</mat-label>
+        <input matInput formControlName="phone" placeholder="例: 090-0000-0000" />
+      </mat-form-field>
+    </mat-card>
+
+    <div class="actions">
+      <a mat-stroked-button routerLink="/">キャンセル</a>
+      <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || submitting">
+        @if (submitting) {
+          <!-- 送信中の場合 -->
+          保存中...
+        } @else {
+          保存
+        }
+      </button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,56 @@
+// :host はコンポーネント自身の外側タグ(<app-product-list>)を指す擬似セレクタ
+// max-width + margin: 0 auto でコンテンツ全体をページ中央に寄せる
+:host {
+  display: block;
+  padding: 24px;
+  max-width: 1000px;
+  margin: 0 auto; // 上下0、左右auto で水平中央寄せ
+}
+
+.product-grid {
+  display: grid;
+  // repeat(auto-fill, ...): 画面幅に応じて自動で列数を調整するレスポンシブな書き方
+  // minmax(220px, 1fr): カードの最小幅220px、上限なし(残り幅を均等分配)
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.product-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.product-name {
+  margin: 0 0 8px;
+  font-size: 1rem;
+}
+
+.product-price {
+  margin: 0 0 8px;
+  font-weight: 500;
+  font-size: 1.1rem;
+}
+
+.out-of-stock {
+  color: #d32f2f; // 赤系
+  font-weight: 500;
+}
+
+.stock {
+  margin: 0;
+  color: #666;
+  font-size: 0.875rem;
+}
+
+.empty-message {
+  // grid-column: 1 / -1 で「1列目から最終列まで」幅いっぱいに広げる
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #666;
+  padding: 32px;
+}
+
+// paginator はグリッド外なので、独立に余白を付ける
+mat-paginator {
+  margin-top: 16px;
+}

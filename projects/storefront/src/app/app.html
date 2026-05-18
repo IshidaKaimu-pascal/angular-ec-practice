@@ -1,0 +1,58 @@
+<!-- 画面上部のナビゲーションバー -->
+<mat-toolbar color="primary">
+  <!-- サイトタイトル兼トップ(商品一覧)へのリンク -->
+  <a mat-button routerLink="/">EC練習</a>
+
+  <!-- 中央スペース埋め: flex: 1 で残り幅を全部この span が吸収する -->
+  <span style="flex: 1"></span>
+
+  <!-- カートアイコンボタン -->
+  <!-- mat-icon-button: アイコン1つだけを乗せる丸いボタン -->
+  <!-- aria-label: スクリーンリーダー用の説明（アイコンだけだと意味が伝わらないため） -->
+  <!-- matBadge: バッジ(数値)を表示する。-->
+  <a mat-icon-button routerLink="/cart" aria-label="カート"
+  [matBadge]="cartService.totalQuantity()"
+  [matBadgeHidden]="cartService.totalQuantity() === 0"
+  matBadgeColor="warn"
+  matBadgeSize="large">
+    <mat-icon>shopping_cart</mat-icon>
+  </a>
+
+  <!-- ユーザー名・ID表示 → クリックでプルダウンメニュー -->
+  <!-- [matMenuTriggerFor]="userMenu" のカッコ[] は「プロパティバインディング」。-->
+  <!-- userMenu は下の #userMenu="matMenu" で宣言した「テンプレート参照変数」を指す。-->
+  <!-- authService.currentUser() で signal を呼び出して User オブジェクトを取得 -->
+  <button mat-button [matMenuTriggerFor]="userMenu">
+    {{ authService.currentUser().name }} (ID:{{ authService.currentUser().id }})
+    <mat-icon>arrow_drop_down</mat-icon>
+  </button>
+
+  <!-- プルダウンメニュー本体 -->
+  <!-- #userMenu="matMenu" は「このメニューを userMenu という名前で参照できるようにする」宣言 -->
+  <mat-menu #userMenu="matMenu">
+    <a mat-menu-item routerLink="/user/settings">
+      <mat-icon>person</mat-icon>
+      <span>設定</span>
+    </a>
+    <a mat-menu-item routerLink="/user/password">
+      <mat-icon>key</mat-icon>
+      <span>パスワード変更</span>
+    </a>
+    <a mat-menu-item routerLink="/orders">
+      <mat-icon>receipt_long</mat-icon>
+      <span>購入履歴</span>
+    </a>
+    <!-- 区切り線 -->
+    <mat-divider></mat-divider>
+
+    <!-- サインアウト: ( ) は「イベントバインディング」-->
+    <!-- (click)="signOut()" でクリック時にコンポーネントの signOut メソッドを呼ぶ -->
+    <button mat-menu-item (click)="signOut()">
+      <mat-icon>logout</mat-icon>
+      <span>サインアウト</span>
+    </button>
+  </mat-menu>
+</mat-toolbar>
+
+<!-- 各ルートに対応するコンポーネントが描画される場所 -->
+<router-outlet />
