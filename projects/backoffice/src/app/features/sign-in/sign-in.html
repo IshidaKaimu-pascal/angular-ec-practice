@@ -1,1 +1,71 @@
-<p>sign-in works!</p>
+<!-- ============================================================ -->
+<!-- 管理者サインイン画面のテンプレート                              -->
+<!--   [formGroup]: TS 側の this.form と紐付ける                    -->
+<!--   (ngSubmit): フォーム送信イベント (Enter キーや submit ボタン) -->
+<!--   formControlName: 各 input を FormControl 名で TS 側と紐付ける -->
+<!-- ============================================================ -->
+<div class="sign-in-container">
+  <mat-card class="sign-in-card">
+    <mat-card-header>
+      <mat-card-title>管理者サインイン</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <!-- メールアドレス入力 -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>メールアドレス</mat-label>
+          <input matInput type="email" formControlName="email" autocomplete="email" />
+          <!-- touched: ユーザーが一度フォーカスを外したか (= 編集を始めたか) -->
+          <!--   フォーカスする前からエラー出すと UX が悪いので、touched と組み合わせる -->
+          @if (form.controls.email.hasError('required') && form.controls.email.touched) {
+            <mat-error>メールアドレスを入力してください</mat-error>
+          }
+          @if (form.controls.email.hasError('email') && form.controls.email.touched) {
+            <mat-error>正しいメール形式で入力してください</mat-error>
+          }
+        </mat-form-field>
+
+        <!-- パスワード入力 -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>パスワード</mat-label>
+          <input matInput type="password" formControlName="password" autocomplete="current-password" />
+          @if (form.controls.password.hasError('required') && form.controls.password.touched) {
+            <mat-error>パスワードを入力してください</mat-error>
+          }
+          @if (form.controls.password.hasError('minlength') && form.controls.password.touched) {
+            <mat-error>6文字以上で入力してください</mat-error>
+          }
+        </mat-form-field>
+
+        <!-- サーバー側エラーメッセージ (signin 失敗時等) -->
+        @if (errorMessage()) {
+          <p class="server-error">{{ errorMessage() }}</p>
+        }
+
+        <!-- サインインボタン(送信中かバリデータに引っかかった場合disabled) -->
+        <button
+          mat-flat-button
+          color="primary"
+          type="submit"
+          class="submit-button"
+          [disabled]="submitting() || form.invalid"
+        >
+
+          @if (submitting()) {
+            サインイン中…
+          } @else {
+            サインイン
+          }
+        </button>
+      </form>
+    </mat-card-content>
+
+    <!-- 管理者新規登録への導線                                       -->
+    <!-- ⚠️ 学習用なので「誰でも作れる」状態。本番では招待制 or CLI 限定にすべき -->
+    <mat-card-actions class="signup-link">
+      <span>新しい管理者を作成する場合は</span>
+      <a routerLink="/admin/signup">管理者登録</a>
+    </mat-card-actions>
+  </mat-card>
+</div>

@@ -39,7 +39,9 @@ export class App {
 
   // サービスを注入。テンプレートから直接 cartService.totalQuantity() などを参照する
   protected readonly cartService = inject(CartService);
-  // AuthService 経由で currentUser を取得する設計に変更（個別画面でも同じソースを参照可能）
+  // AuthService 経由で signedIn() / currentUser() を参照する設計
+  //   currentUser は Signal<User | null>。未ログイン時は null になるため、
+  //   テンプレートでは signedIn() で表示制御し、参照時は ?. を付ける。
   protected readonly authService = inject(AuthService);
 
   // サインアウト処理: ロジックは AuthService に集約。コンポーネント側は委譲するだけ。

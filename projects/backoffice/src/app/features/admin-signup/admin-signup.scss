@@ -1,0 +1,55 @@
+// 管理者新規登録画面のスタイル
+//   - sign-in と同じ構造 (中央配置)
+//   - 項目数が多いのでカード幅は max 480px と少し広め
+
+.admin-signup-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 48px 16px;
+}
+
+.admin-signup-card {
+  width: 100%;
+  max-width: 480px;
+  padding: 24px;
+}
+
+// 警告メッセージ (本番では削除する想定)
+//   黄色背景 + 注意喚起の色合い
+.warning-note {
+  background: #fff8e1;
+  border-left: 4px solid #ffa000;
+  color: #6d4c41;
+  padding: 12px 16px;
+  font-size: 13px;
+  margin: 0 0 16px;
+  border-radius: 4px;
+}
+
+// mat-form-field を横幅いっぱいに広げる
+.full-width {
+  width: 100%;
+}
+
+// 送信ボタンも横幅いっぱい
+.submit-button {
+  width: 100%;
+  margin-top: 8px;
+}
+
+// サーバー側エラー / バリデーションエラー (赤色 + 余白)
+.server-error {
+  color: #d32f2f;
+  font-size: 14px;
+  margin: 8px 0 16px;
+  text-align: center;
+}
+
+// サインインへの導線 (中央寄せ、控えめなサイズ)
+.signin-link {
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 16px 16px;
+  font-size: 14px;
+}

@@ -29,9 +29,14 @@ export class OrderHistory implements OnInit {
   protected readonly orders = signal<Order[]>([]);
 
   ngOnInit(): void {
-    // 現在のユーザーIDで履歴を絞り込み取得
-    const userId = this.authService.currentUser().id;
-    this.orderService.getAll(userId).subscribe({
+    // 現在のユーザー情報を取得
+    // currentUser() の戻り値は Signal<User | null>。Step 7-C-4 で null になり得る型に変わったため、
+    // ここで null ガードを入れて型を確定させる。
+    // AuthGuard が /orders を保護しているので、実行時にここが null になることは無い (型上のチェック)。
+    const user = this.authService.currentUser();
+    if (!user) return;
+
+    this.orderService.getAll(user.id).subscribe({
       next: (data) => this.orders.set(data),
       error: (err) => console.error('購入履歴の取得に失敗:', err),
     });

@@ -1,1 +1,74 @@
-<p>category-create works!</p>
+<div class="page">
+  <!-- ページヘッダー: タイトルのみ (作成画面なので「新規作成」ボタンは不要) -->
+  <header class="page-header">
+    <h2>カテゴリ新規作成</h2>
+  </header>
+
+  <!-- ─────────────────────────────────────────────────────
+       Reactive Forms との結びつけ
+         [formGroup]="form" ... TS クラスの form プロパティとこのフォーム要素を紐付け
+         (ngSubmit)="onSubmit()" ... submit イベント (Enter キーや type=submit ボタン押下) を捕捉
+       ───────────────────────────────────────────────────── -->
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form">
+
+    <!-- ─────────────────────────────────────────────────────
+         カテゴリ名 入力欄
+           appearance="outline" ... Material の枠線スタイル (一般的に見やすい)
+           formControlName="name" ... TS 側の form.controls.name とこの input を双方向にバインド
+           maxlength="50" は HTML 標準属性 (ブラウザレベルで 51 文字目を弾く)
+                          Validators.maxLength は値が通った後の判定なので両方あると安心
+         ───────────────────────────────────────────────────── -->
+    <mat-form-field appearance="outline" class="field">
+      <mat-label>カテゴリ名</mat-label>
+      <input matInput type="text" formControlName="name" maxlength="50" />
+
+      <!-- mat-error: コントロールが invalid かつ touched (一度ぼかした) のときだけ表示される -->
+      <!-- @if は Angular 17+ の制御フロー構文 (旧 *ngIf に相当) -->
+      @if (form.controls.name.hasError('required')) {
+        <mat-error>カテゴリ名は必須です</mat-error>
+      }
+      @if (form.controls.name.hasError('maxlength')) {
+        <mat-error>50文字以下で入力してください</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- ─────────────────────────────────────────────────────
+         表示順 入力欄
+           type="number" でブラウザのスピナー (上下ボタン) が出る
+           min="0" は HTML 標準属性 (Validators.min と二段構え)
+         ───────────────────────────────────────────────────── -->
+    <mat-form-field appearance="outline" class="field">
+      <mat-label>表示順 (0以上の整数。小さい値ほど先に表示)</mat-label>
+      <input matInput type="number" formControlName="displayOrder" min="0" />
+
+      @if (form.controls.displayOrder.hasError('required')) {
+        <mat-error>表示順は必須です</mat-error>
+      }
+      @if (form.controls.displayOrder.hasError('min')) {
+        <mat-error>0以上の値を入力してください</mat-error>
+      }
+      @if (form.controls.displayOrder.hasError('pattern')) {
+        <mat-error>整数で入力してください (小数・負数は不可)</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- ─────────────────────────────────────────────────────
+         アクションボタン (キャンセル / 作成)
+         ───────────────────────────────────────────────────── -->
+    <div class="actions">
+      <!-- キャンセル: SPA 内で /categories へ戻る (RouterLink) -->
+      <a mat-stroked-button routerLink="/categories">キャンセル</a>
+
+      <!-- 作成ボタン:
+             type="submit" にすることで <form> の (ngSubmit) を発火させる
+             [disabled]="submitting()" で送信中はクリック不可 (二重送信防止) -->
+      <button mat-flat-button color="primary" type="submit" [disabled]="submitting()">
+        @if (submitting()) {
+          送信中…
+        } @else {
+          作成
+        }
+      </button>
+    </div>
+  </form>
+</div>

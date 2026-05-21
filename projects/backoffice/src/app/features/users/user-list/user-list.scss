@@ -1,0 +1,48 @@
+// UserList 専用スタイル (CategoryList / ProductList と同じ構成)
+// :host はこのコンポーネントのルート要素を指す (selector="app-user-list" の <app-user-list> 自身)
+:host {
+  display: block;
+  padding: 1.5rem;
+}
+
+.page-header {
+  // ヘッダー: タイトル(左) と 新規作成ボタン(右) を両端寄せ
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+
+  h2 {
+    margin: 0;
+  }
+}
+
+.search-bar {
+  // 検索欄: テーブルの上に配置する独立した行
+  margin-bottom: 1rem;
+
+  .search-field {
+    // 検索フィールドの横幅 (画面が広くても伸びすぎないよう最大幅を制限)
+    //   ユーザー検索は単一フィールドなので category-list と同じ 320px を採用
+    width: 100%;
+    max-width: 320px;
+  }
+}
+
+.table {
+  // テーブル全体を画面幅いっぱいに広げる (Material 標準は内容に合わせて縮む)
+  width: 100%;
+}
+
+.status-message {
+  // 「読み込み中…」「ユーザーが登録されていません」用の控えめスタイル
+  padding: 2rem;
+  text-align: center;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+// 操作列のボタン間に少し隙間を空ける
+td .mat-mdc-stroked-button,
+td .mat-mdc-button-base {
+  margin-right: 0.25rem;
+}

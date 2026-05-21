@@ -11,12 +11,11 @@
     "build:shared": "ng build shared",
     "test": "ng test",
     "dev:api": "npm --prefix api run dev",
-    "dev:shared": "ng build shared --watch",
     "dev:store": "ng serve storefront",
     "dev:back": "ng serve backoffice --port 4201",
-    "dev": "concurrently -k -n api,shared,store -c yellow,cyan,green npm:dev:api npm:dev:shared npm:dev:store",
-    "dev:backoffice": "concurrently -k -n api,shared,back -c yellow,cyan,magenta npm:dev:api npm:dev:shared npm:dev:back",
-    "dev:all": "concurrently -k -n api,shared,store,back -c yellow,cyan,green,magenta npm:dev:api npm:dev:shared npm:dev:store npm:dev:back"
+    "dev": "concurrently -k -n api,store -c yellow,green npm:dev:api npm:dev:store",
+    "dev:backoffice": "concurrently -k -n api,back -c yellow,magenta npm:dev:api npm:dev:back",
+    "dev:all": "concurrently -k -n api,store,back -c yellow,green,magenta npm:dev:api npm:dev:store npm:dev:back"
   },
   "private": true,
   "packageManager": "npm@11.12.1",

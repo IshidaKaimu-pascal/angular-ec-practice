@@ -55,7 +55,8 @@ export class ProductList implements OnInit {
   //   pageSize:  1ページに表示する件数
   // ─────────────────────────────────────────────────────
   protected readonly pageIndex = signal<number>(0);
-  protected readonly pageSize = signal<number>(4);
+  // pageSize は 3 の倍数にしておくと、カテゴリ (毛糸/布地/道具) ごとに 3 枚ずつ並びやすい
+  protected readonly pageSize = signal<number>(6);
 
   // ─────────────────────────────────────────────────────
   // ページング処理
@@ -69,7 +70,52 @@ export class ProductList implements OnInit {
       //開始インデックス(ページ番号 * 1ページの件数)
       const start = this.pageIndex() * this.pageSize();
       return this.filteredProducts().slice(start, start + this.pageSize());
-    })  
+    })
+
+  // ─────────────────────────────────────────────────────
+  // TODO CC: groupedProducts を実装する
+  //   役割: 現在ページの商品 (paginatedProducts()) をカテゴリごとにグループ化する
+  //
+  //   戻り値の型 (イメージ):
+  //     { categoryName: string; products: Product[] }[]
+  //
+  //   なぜグループ化が必要?
+  //     - テンプレートで「カテゴリ見出し → そのカテゴリの商品」を順に並べたい
+  //     - Angular の @for は「配列」を順に回す仕組みなので、
+  //       事前に「カテゴリごとの配列の配列」に変形しておくと描画が素直になる
+  //
+  //   ヒント:
+  //     - product.category?.name でカテゴリ名を取り出せる
+  //       (? は optional chaining: category が undefined の時は undefined を返す)
+  //     - category が無い商品は '未分類' などにフォールバックすると安全
+  //     - 元の並び順 (id 昇順) を維持しながら「初めて出てきたカテゴリ順」で並べたいので、
+  //       Map<string, Product[]> を使うと挿入順が保たれて便利
+  //       (通常のオブジェクトは挿入順保証がブラウザ依存になるケースがある)
+  //
+  //   完成形のヒント (構造):
+  //     protected readonly groupedProducts = computed(() => {
+  //       const map = new Map<string, Product[]>();
+  //       for (const p of this.paginatedProducts()) {
+  //         const name = p.category?.name ?? '未分類';
+  //         // map に name キーが無ければ空配列を作る → push する
+  //         // ...
+  //       }
+  //       // Map → 配列形式に変換して return
+  //       // return Array.from(map, ([categoryName, products]) => ({ categoryName, products }));
+  //     });
+  // ─────────────────────────────────────────────────────
+  // ここに groupedProducts を実装する
+  protected readonly groupedProducts = computed(() => {
+    const map =  new Map<String,Product[]>();
+    for(const p of this.paginatedProducts()){
+      const name = p.category?.name ?? '未分類';
+      if(!map.has(name)){
+        map.set(name,[]);
+      }
+      map.get(name)?.push(p);
+      }
+    return Array.from(map, ([categoryName, products]) => ({ categoryName, products }));
+  })
 
 
   // ─────────────────────────────────────────────────────

@@ -1,0 +1,52 @@
+// 詳細画面用の余白とコンテンツ幅 (Create/Edit と同じ)
+.page {
+  padding: 24px;
+  max-width: 600px;
+}
+
+.page-header {
+  margin-bottom: 16px;
+}
+
+// ─────────────────────────────────────────────────────
+// 詳細表示: 「項目名 : 値」を2列のグリッドで並べる
+//   dl/dt/dd は HTML の「説明リスト」要素。意味的にもラベル&値の組に最適
+//   grid-template-columns: 120px 1fr → ラベルは固定幅、値は残り全部
+// ─────────────────────────────────────────────────────
+.detail-grid {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 12px 16px;
+  margin: 0 0 24px;
+}
+
+.detail-grid dt {
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.detail-grid dd {
+  margin: 0;
+}
+
+// 「カテゴリが見つかりません」等のメッセージ用
+.status-message {
+  padding: 24px 0;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+// ボタンを右寄せに配置
+.actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+// ローディング表示: スピナーとテキストを横並びに
+.loading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 24px 0;
+}

@@ -1,0 +1,97 @@
+<div class="page">
+  <!-- ページヘッダー: タイトルのみ -->
+  <header class="page-header">
+    <h2>ユーザー編集</h2>
+  </header>
+
+  <!-- ─────────────────────────────────────────────────────
+       2分岐表示
+         @if (loading()) ... API 取得中はスピナー
+         @else           ... 取得完了後にフォームを表示
+       ───────────────────────────────────────────────────── -->
+  @if (loading()) {
+    <div class="loading">
+      <mat-spinner diameter="40"></mat-spinner>
+      <span>読み込み中…</span>
+    </div>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form">
+
+      <!-- ─────────────────────────────────────────────────────
+           氏名 入力欄
+           ───────────────────────────────────────────────────── -->
+      <mat-form-field appearance="outline" class="field">
+        <mat-label>氏名</mat-label>
+        <input matInput type="text" formControlName="name" maxlength="50" />
+
+        @if (form.controls.name.hasError('required')) {
+          <mat-error>氏名は必須です</mat-error>
+        }
+        @if (form.controls.name.hasError('maxlength')) {
+          <mat-error>50文字以下で入力してください</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- ─────────────────────────────────────────────────────
+           メールアドレス 入力欄
+           ───────────────────────────────────────────────────── -->
+      <mat-form-field appearance="outline" class="field">
+        <mat-label>メールアドレス</mat-label>
+        <input matInput type="email" formControlName="email" maxlength="100" />
+
+        @if (form.controls.email.hasError('required')) {
+          <mat-error>メールアドレスは必須です</mat-error>
+        }
+        @if (form.controls.email.hasError('email')) {
+          <mat-error>正しいメールアドレス形式で入力してください</mat-error>
+        }
+        @if (form.controls.email.hasError('maxlength')) {
+          <mat-error>100文字以下で入力してください</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- パスワード欄 / 権限欄は削除済み:
+              - パスワード変更は storefront の /user/password ページで行う設計に変更
+              - 権限選択は User テーブルを customer 一色として扱うため不要 -->
+
+      <!-- ─────────────────────────────────────────────────────
+           住所 入力欄 (任意項目)
+           ───────────────────────────────────────────────────── -->
+      <mat-form-field appearance="outline" class="field">
+        <mat-label>住所 (任意)</mat-label>
+        <input matInput type="text" formControlName="address" maxlength="200" />
+
+        @if (form.controls.address.hasError('maxlength')) {
+          <mat-error>200文字以下で入力してください</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- ─────────────────────────────────────────────────────
+           電話番号 入力欄 (任意項目)
+           ───────────────────────────────────────────────────── -->
+      <mat-form-field appearance="outline" class="field">
+        <mat-label>電話番号 (任意)</mat-label>
+        <input matInput type="tel" formControlName="phone" maxlength="20" />
+
+        @if (form.controls.phone.hasError('maxlength')) {
+          <mat-error>20文字以下で入力してください</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- ─────────────────────────────────────────────────────
+           アクションボタン (キャンセル / 更新)
+           ───────────────────────────────────────────────────── -->
+      <div class="actions">
+        <a mat-stroked-button routerLink="/users">キャンセル</a>
+
+        <button mat-flat-button color="primary" type="submit" [disabled]="submitting()">
+          @if (submitting()) {
+            送信中…
+          } @else {
+            更新
+          }
+        </button>
+      </div>
+    </form>
+  }
+</div>

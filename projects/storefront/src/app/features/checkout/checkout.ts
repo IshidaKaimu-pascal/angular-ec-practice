@@ -61,7 +61,10 @@ export class Checkout {
       return;
     }
 
+    // currentUser() は Signal<User | null>。AuthGuard で /checkout を保護しているので
+    // 実行時には null にならないが、型上の null ガードを入れる。
     const user = this.authService.currentUser();
+    if (!user) return;
 
     // 住所が未登録だと注文できない（API側でも shippingAddress は必須）
     if (!user.address) {

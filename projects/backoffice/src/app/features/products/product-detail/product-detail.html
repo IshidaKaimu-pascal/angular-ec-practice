@@ -1,0 +1,89 @@
+<div class="page">
+  <!-- ページヘッダー: タイトルのみ -->
+  <header class="page-header">
+    <h2>商品詳細</h2>
+  </header>
+
+  <!-- ─────────────────────────────────────────────────────
+       3分岐表示
+         @if (loading())            ... API 取得中はスピナー
+         @else if (!product())      ... 取得失敗 (通常は ngOnInit で /products へリダイレクトされるが念のため)
+         @else                      ... 詳細を表示
+       ───────────────────────────────────────────────────── -->
+  @if (loading()) {
+    <div class="loading">
+      <mat-spinner diameter="40"></mat-spinner>
+      <span>読み込み中…</span>
+    </div>
+  } @else if (!product()) {
+    <p class="status-message">商品が見つかりませんでした。</p>
+  } @else {
+    <!-- ─────────────────────────────────────────────────────
+         詳細データの表示
+           signalのproduct() は null チェック済みだが TypeScript は推論できないので
+           non-null assertion (!) で「null ではない」と TS に伝える
+         ───────────────────────────────────────────────────── -->
+    <dl class="detail-grid">
+      <!-- ID -->
+      <dt>ID</dt>
+      <dd>{{ product()!.id }}</dd>
+
+      <!-- 商品名 -->
+      <dt>商品名</dt>
+      <dd>{{ product()!.name }}</dd>
+
+      <!-- 説明 (null 許容なので未入力時は '—' を表示)
+           ?? は null/undefined のフォールバック演算子 -->
+      <dt>説明</dt>
+      <dd>{{ product()!.description ?? '—' }}</dd>
+
+      <!-- 価格 (number パイプで桁区切り表示: 1000 → 1,000) -->
+      <dt>価格</dt>
+      <dd>{{ product()!.price | number }} 円</dd>
+
+      <!-- 在庫 -->
+      <dt>在庫</dt>
+      <dd>{{ product()!.stock }}</dd>
+
+      <!-- カテゴリ名 (API 側で include した場合のみ category が含まれる)
+           ?. は optional chaining、null/undefined のとき undefined を返す -->
+      <dt>カテゴリ</dt>
+      <dd>{{ product()!.category?.name ?? '—' }}</dd>
+
+      <!-- 画像
+           [src]="..." はプロパティバインディング:
+             TS 側の式を評価して <img> 要素の src プロパティに代入する。
+             角括弧を外した src="product()!.imageUrl" だと文字列リテラル扱いになり、
+             signal の値が解釈されず literal "product()!.imageUrl" が URL に使われてしまう。 -->
+      <dt>画像</dt>
+      <dd>
+        @if(product()!.imageUrl){
+          <img [src]="product()!.imageUrl" alt="商品画像" class="thumbnail">
+        }@else {
+          -
+        }
+      </dd>
+
+      <!-- 作成日 ('yyyy-MM-dd HH:mm' で日付+時刻も表示) -->
+      <dt>作成日</dt>
+      <dd>{{ product()!.createdAt | date:'yyyy-MM-dd HH:mm' }}</dd>
+
+      <!-- 更新日 -->
+      <dt>更新日</dt>
+      <dd>{{ product()!.updatedAt | date:'yyyy-MM-dd HH:mm' }}</dd>
+    </dl>
+
+    <!-- ─────────────────────────────────────────────────────
+         アクションボタン (一覧に戻る / 編集)
+         ───────────────────────────────────────────────────── -->
+    <div class="actions">
+      <!-- 一覧に戻る: SPA 内で /products へ -->
+      <a mat-stroked-button routerLink="/products">一覧に戻る</a>
+
+      <!-- 編集: 同じ商品の編集画面へ -->
+      <a mat-flat-button color="primary" [routerLink]="['/products', product()!.id, 'edit']">
+        編集
+      </a>
+    </div>
+  }
+</div>

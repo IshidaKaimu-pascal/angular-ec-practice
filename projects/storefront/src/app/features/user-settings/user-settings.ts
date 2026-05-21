@@ -49,7 +49,11 @@ export class UserSettings implements OnInit {
   ngOnInit(): void {
     // 画面表示時に currentUser のデータをフォームに事前入力
     // patchValue: 一部または全部のフィールドを一括セット(set()と違って未指定フィールドは触らない)
+    // currentUser() は Signal<User | null>。AuthGuard で /user/settings を保護しているので
+    // 実行時には null にならないが、型上の null ガードを入れる。
     const user = this.authService.currentUser();
+    if (!user) return;
+
     this.form.patchValue({
       name: user.name,
       email: user.email,
@@ -62,7 +66,10 @@ export class UserSettings implements OnInit {
   protected onSubmit(): void {
     if (this.form.invalid) return;
 
+    // ngOnInit と同じく、ここでも null ガードを入れる
     const user = this.authService.currentUser();
+    if (!user) return;
+
     const values = this.form.getRawValue();
 
     // 空文字を null に戻して送る(API側で「住所未登録」を null として扱うため)

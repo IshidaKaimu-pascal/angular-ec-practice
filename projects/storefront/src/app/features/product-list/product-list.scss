@@ -7,11 +7,91 @@
   margin: 0 auto; // 上下0、左右auto で水平中央寄せ
 }
 
+// ─────────────────────────────────────────────────────
+// ページヘッダー (ECサイト風)
+//   背景色を画面端まで広げるテクニック:
+//   親 (:host) は max-width: 1000px で中央寄せされている。
+//   calc(50% - 50vw) は「親の中央から画面端まで戻る距離」(負の値)。
+//   これを左右の margin に当てると、見た目だけ画面端まで広がる。
+//   ※ vw は viewport width (画面幅の1%)。50vw は画面幅の半分。
+// ─────────────────────────────────────────────────────
+.page-header {
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  margin-top: -24px;     // :host の padding-top (24px) を打ち消して画面上端まで届かせる
+  margin-bottom: 32px;
+
+  background-color: #f6efe6;       // 温かみのあるベージュ
+  border-bottom: 1px solid #e6dccd; // ヘッダー下の薄い区切り線
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04); // ふんわり影で立体感
+}
+
+// ヘッダー内側のコンテナ: 中身は中央寄せして読みやすくする
+.page-header-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 32px 24px;
+  display: flex;
+  justify-content: space-between; // 左にタイトル / 右に検索ボックス
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap; // 画面が狭い時は縦並びに折り返す
+}
+
+.shop-title {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #5d4037;            // 深めのブラウン (手芸店らしい温かみ)
+  letter-spacing: 0.02em;
+}
+
+.shop-subtitle {
+  margin: 4px 0 0;
+  font-size: 0.95rem;
+  color: #888;
+}
+
+.search-area {
+  flex-shrink: 0; // 検索ボックスは縮めたくないので 0
+}
+
+// 検索ボックスに固定幅を持たせて見た目を安定させる
+.search-field {
+  width: 280px;
+}
+
+// カテゴリのまとまり同士の余白
+.categories {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+// 1カテゴリ分のブロック (見出し + グリッド)
+.category-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+// カテゴリ見出し
+//   左側に色付きの縦バー(border-left)を入れてECサイトらしいセクション感を出す
+.category-heading {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  padding: 4px 0 6px 12px;
+  border-left: 4px solid #8d6e63;  // 落ち着いたブラウン
+  border-bottom: 1px solid #eee;   // 控えめな下線
+  color: #4e342e;
+}
+
 .product-grid {
   display: grid;
-  // repeat(auto-fill, ...): 画面幅に応じて自動で列数を調整するレスポンシブな書き方
-  // minmax(220px, 1fr): カードの最小幅220px、上限なし(残り幅を均等分配)
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  // repeat(3, 1fr): 3列固定。1fr は「残り幅を均等分配」
+  // 画面幅が狭くなってもカードが3列に並ぶ (各カードの幅は縮む)
+  grid-template-columns: repeat(3, 1fr);
   gap: 16px;
 }
 

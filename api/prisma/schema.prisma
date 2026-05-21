@@ -34,11 +34,12 @@ model User {
 // Category: 商品カテゴリ
 // ============================================================
 model Category {
-  id        Int       @id @default(autoincrement())
-  name      String    @unique
-  products  Product[]                                // 1カテゴリは複数の商品を持つ
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id           Int       @id @default(autoincrement())
+  name         String    @unique
+  displayOrder Int       @default(0)                 // 商品一覧画面でカテゴリを並べる際の表示順（小さい値ほど先に表示）
+  products     Product[]                             // 1カテゴリは複数の商品を持つ
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 }
 
 // ============================================================
@@ -86,4 +87,23 @@ model OrderItem {
   quantity  Int                                      // 数量
   unitPrice Int                                      // 購入時点の単価をスナップショット保存
                                                      // （後で商品価格を変えても履歴は影響を受けない）
+}
+
+// ============================================================
+// Admin: 管理者（backoffice にログインする運営側ユーザー）
+// User と別テーブルにする理由:
+//   - 顧客と権限管理を分離し、誤操作リスクを下げる
+//   - role カラムでの権限切り替えより、テーブル自体を分けたほうが明確
+// User との違い:
+//   - role なし（このテーブル全員が管理者）
+//   - address / phone なし（連絡先不要）
+//   - orders リレーションなし（管理者は購入しない）
+// ============================================================
+model Admin {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique                         // ログインID（重複不可）
+  password  String                                   // bcryptハッシュ化済み文字列を保存（Step 7-A-2 で対応）
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

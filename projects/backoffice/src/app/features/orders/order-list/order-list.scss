@@ -1,0 +1,30 @@
+.page {
+  padding: 16px;
+}
+
+.page-header {
+  margin-bottom: 16px;
+}
+
+// フィルタブロックは横並び (画面幅が狭ければ折り返す)
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+  align-items: center;
+
+  // 各フィルタの最小幅を確保して読みやすさを担保
+  mat-form-field {
+    min-width: 200px;
+  }
+}
+
+.orders-table {
+  width: 100%;
+}
+
+.status-message {
+  padding: 16px 0;
+  color: rgba(0, 0, 0, 0.6);
+}

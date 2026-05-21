@@ -77,7 +77,12 @@ export class PasswordChange {
   protected onSubmit(): void {
     if (this.form.invalid) return;
 
-    const userId = this.authService.currentUser().id;
+    // currentUser() は Signal<User | null>。AuthGuard で /user/password を保護しているので
+    // 実行時には null にならないが、型上の null ガードを入れる。
+    const user = this.authService.currentUser();
+    if (!user) return;
+
+    const userId = user.id;
     const newPassword = this.form.controls.newPassword.value;
 
     // 部分更新: password だけ送る

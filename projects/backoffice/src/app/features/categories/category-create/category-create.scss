@@ -1,0 +1,29 @@
+// 作成画面用のシンプルな余白とフォーム幅
+.page {
+  padding: 24px;
+  max-width: 600px;
+}
+
+.page-header {
+  margin-bottom: 16px;
+}
+
+// flex column でフィールドを縦に並べる
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+// mat-form-field の幅をコンテナ幅いっぱいに
+.field {
+  width: 100%;
+}
+
+// ボタンを右寄せに配置
+.actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 16px;
+}

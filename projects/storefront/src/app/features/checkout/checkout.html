@@ -28,11 +28,13 @@
      </mat-card>
 
      <!-- お届け先 -->
+     <!-- currentUser() は Signal<User | null>。AuthGuard で保護しているので実行時に null にならないが、 -->
+     <!-- テンプレート型チェック上は ?. (Optional chaining) で null 安全に書く -->
      <mat-card class="section">
        <h2>お届け先</h2>
-       <p class="user-name">{{ authService.currentUser().name }} 様</p>
-         @if(authService.currentUser().address){
-            <p class="address">{{ authService.currentUser().address}}</p>
+       <p class="user-name">{{ authService.currentUser()?.name }} 様</p>
+         @if(authService.currentUser()?.address){
+            <p class="address">{{ authService.currentUser()?.address }}</p>
          }@else {
             <p class="warning">error:住所が未登録です。設定画面から登録してください。</p>
          }

@@ -2,6 +2,7 @@
 // `npm run dev` で tsx がこのファイルを起動する。
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
+import path from 'node:path';
 import 'dotenv/config';
 
 // ============================================================
@@ -23,6 +24,16 @@ app.use(
 app.use(express.json());
 
 // ============================================================
+// 静的ファイル配信
+//   api/public 配下のファイルを /static/... のURLで配信する。
+//   例: api/public/products/yarn-red-500g.jpg
+//       → http://localhost:3000/static/products/yarn-red-500g.jpg
+//   path.join(__dirname, '../public') は、dev時 (tsx で api/src/index.ts を起動) でも
+//   api/public/ を指すように __dirname (= api/src) から一つ上に上がる解決。
+// ============================================================
+app.use('/static', express.static(path.join(__dirname, '../public')));
+
+// ============================================================
 // 動作確認用ルート
 // ブラウザで http://localhost:3000/ にアクセスすると {ok: true} が返る
 // ============================================================
@@ -38,10 +49,14 @@ import usersRouter from './routes/users';
 import categoriesRouter from './routes/categories';
 import productsRouter from './routes/products';
 import ordersRouter from './routes/orders';
+import authRouter from './routes/auth';
+import uploadsRouter from './routes/uploads';
 app.use('/users', usersRouter);
 app.use('/categories', categoriesRouter);
 app.use('/products', productsRouter);
 app.use('/orders', ordersRouter);
+app.use('/auth', authRouter);
+app.use('/uploads', uploadsRouter);
 
 // ============================================================
 // 404ハンドラ（マッチしないURLへのリクエスト用）

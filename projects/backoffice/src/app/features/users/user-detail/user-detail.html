@@ -1,0 +1,87 @@
+<div class="page">
+  <!-- ページヘッダー: タイトルのみ -->
+  <header class="page-header">
+    <h2>ユーザー詳細</h2>
+  </header>
+
+  <!-- ─────────────────────────────────────────────────────
+       3分岐表示
+         @if (loading())            ... API 取得中はスピナー
+         @else if (!user())         ... 取得失敗 (通常は ngOnInit で /users へリダイレクトされるが念のため)
+         @else                      ... 詳細を表示
+       ───────────────────────────────────────────────────── -->
+  @if (loading()) {
+    <div class="loading">
+      <mat-spinner diameter="40"></mat-spinner>
+      <span>読み込み中…</span>
+    </div>
+  } @else if (!user()) {
+    <p class="status-message">ユーザーが見つかりませんでした。</p>
+  } @else {
+    <!-- ─────────────────────────────────────────────────────
+         詳細データの表示
+           signal の user() は null チェック済みだが TypeScript は推論できないので
+           non-null assertion (!) で「null ではない」と TS に伝える
+         ───────────────────────────────────────────────────── -->
+    <dl class="detail-grid">
+      <!-- ID -->
+      <dt>ID</dt>
+      <dd>{{ user()!.id }}</dd>
+
+      <!-- 氏名 -->
+      <dt>氏名</dt>
+      <dd>{{ user()!.name }}</dd>
+
+      <!-- メールアドレス -->
+      <dt>メールアドレス</dt>
+      <dd>{{ user()!.email }}</dd>
+
+      <!-- 権限項目は削除済み: customer 一色のため不要 -->
+
+      <!-- 住所 (nullable: 未登録時は '—' を表示)
+           ?? は null/undefined のフォールバック演算子 -->
+      <dt>住所</dt>
+      <dd>{{ user()!.address ?? '—' }}</dd>
+
+      <!-- 電話番号 (同じく nullable) -->
+      <dt>電話番号</dt>
+      <dd>{{ user()!.phone ?? '—' }}</dd>
+
+      <!-- 作成日 ('yyyy-MM-dd HH:mm' で日付+時刻も表示) -->
+      <dt>作成日</dt>
+      <dd>{{ user()!.createdAt | date:'yyyy-MM-dd HH:mm' }}</dd>
+
+      <!-- 更新日 -->
+      <dt>更新日</dt>
+      <dd>{{ user()!.updatedAt | date:'yyyy-MM-dd HH:mm' }}</dd>
+
+      <!-- ※ password は API のレスポンスに含まれない (safeUserSelect で除外) ため
+              この画面でも表示しない。一覧画面・詳細画面で password を見られない設計は
+              情報漏洩リスクを抑える基本的なセキュリティ対策。 -->
+    </dl>
+
+    <!-- ─────────────────────────────────────────────────────
+         アクションボタン (一覧に戻る / 編集 / 履歴)
+         ───────────────────────────────────────────────────── -->
+    <div class="actions">
+      <!-- 一覧に戻る: SPA 内で /users へ -->
+      <a mat-stroked-button routerLink="/users">一覧に戻る</a>
+
+      <!-- 編集: 同じユーザーの編集画面へ -->
+      <a mat-flat-button color="primary" [routerLink]="['/users', user()!.id, 'edit']">
+        編集
+      </a>
+
+      <!-- このユーザーの履歴を見る (Phase 11-4)
+             [routerLink]="['/orders']"   … 注文履歴一覧画面へ遷移
+             [queryParams]="{ userId: ... }" … URL に ?userId=N を付与する Angular Router の構文
+             結果として /orders?userId=5 のような URL が生成され、
+             遷移先 (OrderList) の queryParams 監視で購入者フィルタが自動セットされる仕組み -->
+      <a mat-stroked-button color="accent"
+         [routerLink]="['/orders']"
+         [queryParams]="{ userId: user()!.id }">
+        このユーザーの履歴を見る
+      </a>
+    </div>
+  }
+</div>

@@ -1,0 +1,118 @@
+<div class="page">
+  <!-- ページヘッダー: タイトルのみ -->
+  <header class="page-header">
+    <h2>ユーザー新規作成</h2>
+  </header>
+
+  <!-- ─────────────────────────────────────────────────────
+       Reactive Forms との結びつけ
+         [formGroup]="form" ... TS クラスの form プロパティとこのフォーム要素を紐付け
+         (ngSubmit)="onSubmit()" ... submit イベント (Enter キーや type=submit ボタン押下) を捕捉
+       ───────────────────────────────────────────────────── -->
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form">
+
+    <!-- ─────────────────────────────────────────────────────
+         氏名 入力欄
+         ───────────────────────────────────────────────────── -->
+    <mat-form-field appearance="outline" class="field">
+      <mat-label>氏名</mat-label>
+      <input matInput type="text" formControlName="name" maxlength="50" />
+
+      @if (form.controls.name.hasError('required')) {
+        <mat-error>氏名は必須です</mat-error>
+      }
+      @if (form.controls.name.hasError('maxlength')) {
+        <mat-error>50文字以下で入力してください</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- ─────────────────────────────────────────────────────
+         メールアドレス 入力欄
+           type="email" でモバイルキーボードが @ を出しやすくなる (ブラウザ補助)
+           Validators.email は形式チェック (=「@含むか」+「ドメインっぽい構造か」)
+           ※ 実在するアドレスかは別の話 (確認メール送信などで担保するのが一般的)
+         ───────────────────────────────────────────────────── -->
+    <mat-form-field appearance="outline" class="field">
+      <mat-label>メールアドレス</mat-label>
+      <input matInput type="email" formControlName="email" maxlength="100" />
+
+      @if (form.controls.email.hasError('required')) {
+        <mat-error>メールアドレスは必須です</mat-error>
+      }
+      @if (form.controls.email.hasError('email')) {
+        <mat-error>正しいメールアドレス形式で入力してください</mat-error>
+      }
+      @if (form.controls.email.hasError('maxlength')) {
+        <mat-error>100文字以下で入力してください</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- ─────────────────────────────────────────────────────
+         パスワード 入力欄
+           type="password" にすると入力文字が ● で隠される (ブラウザ標準のマスク機能)
+           ※ あくまで「肩越し覗き見」を防ぐ視覚的マスク。通信の暗号化は HTTPS で別途必要
+           ※ 本来はパスワード強度ルールを複数組み合わせる (英数記号混在等) のが望ましいが、
+              今回は学習目的のため最小6文字のみ
+         ───────────────────────────────────────────────────── -->
+    <mat-form-field appearance="outline" class="field">
+      <mat-label>パスワード (6文字以上)</mat-label>
+      <input matInput type="password" formControlName="password" maxlength="100" />
+
+      @if (form.controls.password.hasError('required')) {
+        <mat-error>パスワードは必須です</mat-error>
+      }
+      @if (form.controls.password.hasError('minlength')) {
+        <mat-error>6文字以上で入力してください</mat-error>
+      }
+      @if (form.controls.password.hasError('maxlength')) {
+        <mat-error>100文字以下で入力してください</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- 権限欄は削除済み: backoffice からの新規登録は customer 固定 (admin は別テーブルで管理予定) -->
+
+    <!-- ─────────────────────────────────────────────────────
+         住所 入力欄 (任意項目)
+         ───────────────────────────────────────────────────── -->
+    <mat-form-field appearance="outline" class="field">
+      <mat-label>住所 (任意)</mat-label>
+      <input matInput type="text" formControlName="address" maxlength="200" />
+
+      @if (form.controls.address.hasError('maxlength')) {
+        <mat-error>200文字以下で入力してください</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- ─────────────────────────────────────────────────────
+         電話番号 入力欄 (任意項目)
+           type="tel" でモバイルキーボードがテンキーになる (ブラウザ補助)
+         ───────────────────────────────────────────────────── -->
+    <mat-form-field appearance="outline" class="field">
+      <mat-label>電話番号 (任意)</mat-label>
+      <input matInput type="tel" formControlName="phone" maxlength="20" />
+
+      @if (form.controls.phone.hasError('maxlength')) {
+        <mat-error>20文字以下で入力してください</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- ─────────────────────────────────────────────────────
+         アクションボタン (キャンセル / 作成)
+         ───────────────────────────────────────────────────── -->
+    <div class="actions">
+      <!-- キャンセル: SPA 内で /users へ戻る (RouterLink) -->
+      <a mat-stroked-button routerLink="/users">キャンセル</a>
+
+      <!-- 作成ボタン:
+             type="submit" にすることで <form> の (ngSubmit) を発火させる
+             [disabled]="submitting()" で送信中はクリック不可 (二重送信防止) -->
+      <button mat-flat-button color="primary" type="submit" [disabled]="submitting()">
+        @if (submitting()) {
+          送信中…
+        } @else {
+          作成
+        }
+      </button>
+    </div>
+  </form>
+</div>

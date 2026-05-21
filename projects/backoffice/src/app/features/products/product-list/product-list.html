@@ -1,0 +1,157 @@
+<div class="page">
+  <!-- ─────────────────────────────────────────────────────
+       ページヘッダー部: タイトル + 「新規作成」ボタン
+       ───────────────────────────────────────────────────── -->
+  <header class="page-header">
+    <h2>商品管理</h2>
+    <a mat-flat-button color="primary" routerLink="/products/new">
+      <mat-icon>add</mat-icon>
+      新規作成
+    </a>
+  </header>
+
+  <!-- ─────────────────────────────────────────────────────
+       検索欄: 商品名のあいまい検索 + カテゴリ select (AND 結合)
+         [formControl]                ... TS 側の FormControl と双方向バインド
+         mat-select [formControl]     ... 選択値 (categoryId or null) を FormControl に流す
+         <mat-option [value]="null">  ... 「すべて」= null をデフォルト選択肢として用意
+         @for (... ; track ...)       ... Angular 17+ の新構文 (旧 *ngFor)。track でレンダリングを高速化
+       ───────────────────────────────────────────────────── -->
+  <section class="search-bar">
+    <!-- 商品名のテキスト検索 -->
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>商品名で検索</mat-label>
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput type="text" [formControl]="searchControl" placeholder="例: ニット" />
+    </mat-form-field>
+
+    <!-- カテゴリ select (categoryId で絞り込み) -->
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>カテゴリで絞り込み</mat-label>
+      <mat-select [formControl]="categoryControl">
+        <!-- value=null で「絞り込みなし」を表現 -->
+        <mat-option [value]="null">すべて</mat-option>
+        @for (cat of categories(); track cat.id) {
+          <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </section>
+
+  <!-- ─────────────────────────────────────────────────────
+       3分岐表示
+         @if (loading())                     ... 取得中
+         @else if (products().length === 0)  ... 0件
+         @else                               ... テーブル表示
+       ───────────────────────────────────────────────────── -->
+  @if (loading()) {
+    <p class="status-message">読み込み中…</p>
+  } @else if (products().length === 0) {
+    <p class="status-message">商品が登録されていません。</p>
+  } @else {
+    <!-- ─────────────────────────────────────────────────────
+         mat-table: Material のテーブル
+           [dataSource]   ... 表示する配列を渡す
+           matColumnDef   ... 列の定義 (識別子と「ヘッダーセル」「データセル」のテンプレ)
+           displayedColumns ... 表示する列の順序を識別子の配列で指定
+         ───────────────────────────────────────────────────── -->
+    <table mat-table [dataSource]="products()" class="table">
+
+      <!-- ID 列 -->
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef>ID</th>
+        <td mat-cell *matCellDef="let row">{{ row.id }}</td>
+      </ng-container>
+
+      <!-- ─────────────────────────────────────────────────────
+           サムネイル 列 (matColumnDef の値が TS の displayedColumns と一致している必要あり)
+           ───────────────────────────────────────────────────── -->
+      <ng-container matColumnDef="thumbnail">
+        <!-- ヘッダー行 (1 回だけ描画): 列ラベル「画像」 -->
+        <th mat-header-cell *matHeaderCellDef>画像</th>
+
+        <!-- データ行 (商品の数だけ繰り返し描画)
+             *matCellDef="let row" の "row" が 1 行ぶんの商品 (Product 型) -->
+        <td mat-cell *matCellDef="let row">
+          @if (row.imageUrl) {
+            <!-- 画像あり: <img> でサムネを表示
+                 [src]  ... プロパティバインディング。row.imageUrl の文字列が src 属性に渡る
+                 [alt]  ... 画像が読み込めなかったときの代替テキスト & スクリーンリーダー用
+                 class  ... .thumbnail (60×60px・object-fit:cover) は scss 側で定義 -->
+            <img [src]="row.imageUrl" [alt]="row.name" class="thumbnail" />
+          } @else {
+            <!-- 画像なし: 「—」で空欄を視覚的に埋める
+                 .thumbnail-placeholder が width:60px を持つので、画像あり行と
+                 同じ列幅になり、テーブルがガタつかない -->
+            <span class="thumbnail-placeholder">—</span>
+          }
+        </td>
+      </ng-container>
+
+
+      <!-- 商品名 列 -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>商品名</th>
+        <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+      </ng-container>
+
+      <!-- 価格 列 (number パイプで桁区切り表示: 1000 → 1,000) -->
+      <ng-container matColumnDef="price">
+        <th mat-header-cell *matHeaderCellDef>価格</th>
+        <td mat-cell *matCellDef="let row">{{ row.price | number }} 円</td>
+      </ng-container>
+
+      <!-- 在庫 列 -->
+      <ng-container matColumnDef="stock">
+        <th mat-header-cell *matHeaderCellDef>在庫</th>
+        <td mat-cell *matCellDef="let row">{{ row.stock }}</td>
+      </ng-container>
+
+      <!-- カテゴリ 列 (?. は optional chaining、null/undefined のとき undefined を返す)
+           ?? は null/undefined のフォールバック演算子。category が無ければ '—' を表示 -->
+      <ng-container matColumnDef="category">
+        <th mat-header-cell *matHeaderCellDef>カテゴリ</th>
+        <td mat-cell *matCellDef="let row">{{ row.category?.name ?? '—' }}</td>
+      </ng-container>
+
+      <!-- 作成日 列 -->
+      <ng-container matColumnDef="createdAt">
+        <th mat-header-cell *matHeaderCellDef>作成日</th>
+        <td mat-cell *matCellDef="let row">{{ row.createdAt | date:'yyyy-MM-dd' }}</td>
+      </ng-container>
+
+      <!-- 操作 列: 詳細/編集/削除 ボタンの3つ -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>操作</th>
+        <td mat-cell *matCellDef="let row">
+          <a mat-stroked-button [routerLink]="['/products', row.id]">詳細</a>
+          <a mat-stroked-button [routerLink]="['/products', row.id, 'edit']">編集</a>
+          <button mat-stroked-button color="warn" (click)="onDelete(row)">削除</button>
+        </td>
+      </ng-container>
+
+      <!-- ヘッダー行とデータ行の定義: displayedColumns に従って描画される -->
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  }
+
+  <!-- ─────────────────────────────────────────────────────
+       mat-paginator: Material のページ送り UI
+         [length]            ... 全件数 (total signal)
+         [pageSize]          ... 1 ページあたりの件数 (pageSize signal)
+         [pageIndex]         ... 現在のページ番号 (0 起点) (pageIndex signal)
+         [pageSizeOptions]   ... プルダウンで選べるサイズ候補
+         (page)              ... ページ変更時に PageEvent を発火
+       loading 中以外は常に表示 (検索で 0 件になっても「前ページに戻る」操作を可能にするため)
+       ───────────────────────────────────────────────────── -->
+  @if (!loading()) {
+    <mat-paginator
+      [length]="total()"
+      [pageSize]="pageSize()"
+      [pageIndex]="pageIndex()"
+      [pageSizeOptions]="[10, 25, 50]"
+      (page)="onPageChange($event)"
+    />
+  }
+</div>

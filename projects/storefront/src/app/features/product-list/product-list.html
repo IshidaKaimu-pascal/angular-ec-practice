@@ -1,50 +1,71 @@
-<!-- 検索ボックス -->
-<!-- (input) イベント: ユーザーがキーを打つたびに発火 -->
-<!-- $event は input イベントのオブジェクトそのもの。onSearchInput に渡される -->
-<div class="search-area">
-  <mat-form-field appearance="outline" class="search-field">
-    <mat-label>商品を検索</mat-label>
-    <input matInput type="search" (input)="onSearchInput($event)" placeholder="商品名で検索" />
-    <mat-icon matSuffix>search</mat-icon>
-  </mat-form-field>
-</div>
+<!-- ページ上部のヘッダー: ショップタイトル + 検索ボックス -->
+<!-- ECサイトの顔となる領域。背景色付きで画面幅いっぱいに広げ、商品エリアと視覚的に分ける -->
+<header class="page-header">
+  <div class="page-header-inner">
+    <div class="page-header-text">
+      <h1 class="shop-title">ハンドメイドマーケット</h1>
+      <p class="shop-subtitle">毛糸・布地・道具を取り揃えています</p>
+    </div>
 
-<!-- 商品一覧 -->
-<!-- paginatedProducts() は filteredProducts() からページ分だけ切り出した配列を返す -->
-<div class="product-grid">
-  @for (product of paginatedProducts(); track product.id) {
-    <mat-card class="product-card">
-      <!-- @if: 画像URLがある場合のみ表示 -->
-      @if (product.imageUrl) {
-        <img mat-card-image [src]="product.imageUrl" [alt]="product.name" />
-      }
+    <!-- 検索ボックス -->
+    <!-- (input) イベント: ユーザーがキーを打つたびに発火 -->
+    <!-- $event は input イベントのオブジェクトそのもの。onSearchInput に渡される -->
+    <div class="search-area">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>商品を検索</mat-label>
+        <input matInput type="search" (input)="onSearchInput($event)" placeholder="商品名で検索" />
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+    </div>
+  </div>
+</header>
 
-      <mat-card-content>
-        <!-- 商品名 (商品詳細へ遷移させるリンク)-->
-        <h3 class="product-name">
-          <a [routerLink]="['/products', product.id]">{{ product.name }}</a>
-        </h3>
-        <!-- | number は数値フォーマットのパイプ。3桁区切りで表示される -->
-        <p class="product-price">¥{{ product.price | number }}</p>
+<!-- 商品一覧 (カテゴリごとに見出し + 3列グリッド) -->
+<!-- 外側 @for: カテゴリ単位のグループをループ                            -->
+<!-- 内側 @for: そのカテゴリに属する商品をグリッドで並べる                 -->
+<!-- groupedProducts() は paginatedProducts() をカテゴリ単位に変形した配列 -->
+<div class="categories">
+  @for (group of groupedProducts(); track group.categoryName) {
+    <section class="category-section">
+      <h2 class="category-heading">{{ group.categoryName }}</h2>
 
-        <!-- 在庫が0の場合に在庫切れと表示 -->
-        @if(product.stock === 0){
-          <p class="out-of-stock">在庫切れ</p>
-        }@else {
-          <p class="stock">在庫:{{product.stock}}</p>
+      <div class="product-grid">
+        @for (product of group.products; track product.id) {
+          <mat-card class="product-card">
+            <!-- @if: 画像URLがある場合のみ表示 -->
+            @if (product.imageUrl) {
+              <img mat-card-image [src]="product.imageUrl" [alt]="product.name" />
+            }
+
+            <mat-card-content>
+              <!-- 商品名 (商品詳細へ遷移させるリンク)-->
+              <h3 class="product-name">
+                <a [routerLink]="['/products', product.id]">{{ product.name }}</a>
+              </h3>
+              <!-- | number は数値フォーマットのパイプ。3桁区切りで表示される -->
+              <p class="product-price">¥{{ product.price | number }}</p>
+
+              <!-- 在庫が0の場合に在庫切れと表示 -->
+              @if(product.stock === 0){
+                <p class="out-of-stock">在庫切れ</p>
+              }@else {
+                <p class="stock">在庫:{{product.stock}}</p>
+              }
+            </mat-card-content>
+
+            <mat-card-actions>
+              <!-- (click) はイベントバインディング: クリック時に addToCart(product) を呼ぶ -->
+              <!-- [disabled] = "product.stock === 0" は在庫が0の場合にボタンを無効化する -->
+              <button mat-flat-button color="primary" [disabled] = "product.stock === 0" (click)="addToCart(product)">
+                カートに追加
+              </button>
+            </mat-card-actions>
+          </mat-card>
         }
-      </mat-card-content>
-
-      <mat-card-actions>
-        <!-- (click) はイベントバインディング: クリック時に addToCart(product) を呼ぶ -->
-        <!-- [disabled] = "product.stock === 0" は在庫が0の場合にボタンを無効化する -->
-        <button mat-flat-button color="primary" [disabled] = "product.stock === 0" (click)="addToCart(product)">
-          カートに追加
-        </button>
-      </mat-card-actions>
-    </mat-card>
+      </div>
+    </section>
   } @empty {
-    <!-- @empty: 配列が空(0件)だった時にだけ表示される -->
+    <!-- @empty: グループが空(0件)だった時にだけ表示される -->
     <p class="empty-message">商品が見つかりませんでした</p>
   }
 </div>
@@ -62,7 +83,7 @@
   <mat-paginator
     [length]="filteredProducts().length"
     [pageSize]="pageSize()"
-    [pageSizeOptions]="[4, 8, 12]"
+    [pageSizeOptions]="[3, 6, 9]"
     [pageIndex]="pageIndex()"
     (page)="onPageChange($event)"
   />

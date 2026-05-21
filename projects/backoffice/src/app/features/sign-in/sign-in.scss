@@ -1,0 +1,44 @@
+// 管理者サインイン画面のスタイル
+//   - 画面横中央にカードを置く (flex の justify-content: center)
+//   - カード幅は最大 400px、画面が狭い時はそれより縮める
+//   - 上下に余白をつけて画面端に張り付かないようにする
+
+.sign-in-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 48px 16px;
+}
+
+.sign-in-card {
+  width: 100%;
+  max-width: 400px;
+  padding: 24px;
+}
+
+// mat-form-field を横幅いっぱいに広げる
+.full-width {
+  width: 100%;
+}
+
+// 送信ボタンも横幅いっぱい (タップしやすさのため)
+.submit-button {
+  width: 100%;
+  margin-top: 8px;
+}
+
+// サーバー側エラー (赤色 + 余白)
+.server-error {
+  color: #d32f2f;
+  font-size: 14px;
+  margin: 8px 0 16px;
+  text-align: center;
+}
+
+// 管理者登録への導線 (中央寄せ、控えめなサイズ)
+.signup-link {
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 16px 16px;
+  font-size: 14px;
+}

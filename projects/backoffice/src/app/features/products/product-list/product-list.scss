@@ -1,0 +1,76 @@
+// ProductList 専用スタイル (CategoryList と同じ構成)
+// :host はこのコンポーネントのルート要素を指す
+:host {
+  display: block;
+  padding: 1.5rem;
+}
+
+.page-header {
+  // ヘッダー: タイトル(左) と 新規作成ボタン(右) を両端寄せ
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+
+  h2 {
+    margin: 0;
+  }
+}
+
+.search-bar {
+  // 検索欄: 商品名テキスト + カテゴリ select を横並びに配置
+  //   flex-wrap: 画面幅が狭いと自動で改行
+  //   gap        : フィールド間の隙間 (1rem)
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+
+  .search-field {
+    // 各フィールドの基本幅 (画面が広くても伸びすぎないよう制限)
+    width: 100%;
+    max-width: 260px;
+  }
+}
+
+.table {
+  // テーブル全体を画面幅いっぱいに広げる
+  width: 100%;
+}
+
+.status-message {
+  // 「読み込み中…」「商品が登録されていません」用の控えめスタイル
+  padding: 2rem;
+  text-align: center;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+// 操作列のボタン間に少し隙間を空ける
+td .mat-mdc-stroked-button,
+td .mat-mdc-button-base {
+  margin-right: 0.25rem;
+}
+
+// ─────────────────────────────────────────────────────
+// サムネイル列の <img> 用スタイル
+//   object-fit: cover ... 縦横比を保ったまま枠を埋める (はみ出した部分は切り落とす)
+//                         → 縦長/横長どんな画像でも 60×60 の正方形に見える
+//   vertical-align     ... <img> はインライン要素扱いなので、テキストのベースライン
+//                          ずれを直すため middle を指定
+// ─────────────────────────────────────────────────────
+.thumbnail {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid var(--mat-sys-outline-variant);
+  vertical-align: middle;
+}
+
+// 画像未設定 (imageUrl=null) の商品に表示する代替テキスト
+.thumbnail-placeholder {
+  display: inline-block;
+  width: 60px;
+  text-align: center;
+  color: var(--mat-sys-on-surface-variant);
+}

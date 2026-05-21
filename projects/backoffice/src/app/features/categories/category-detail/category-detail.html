@@ -1,1 +1,61 @@
-<p>category-detail works!</p>
+<div class="page">
+  <!-- ページヘッダー: タイトルのみ -->
+  <header class="page-header">
+    <h2>カテゴリ詳細</h2>
+  </header>
+
+  <!-- ─────────────────────────────────────────────────────
+       3分岐表示
+         @if (loading())            ... API 取得中はスピナー
+         @else if (!category())     ... 取得失敗 (実際は ngOnInit で /categories へリダイレクトされるが念のため)
+         @else                      ... 詳細を表示
+       ───────────────────────────────────────────────────── -->
+  @if (loading()) {
+    <div class="loading">
+      <mat-spinner diameter="40"></mat-spinner>
+      <span>読み込み中…</span>
+    </div>
+  } @else if (!category()) {
+    <p class="status-message">カテゴリが見つかりませんでした。</p>
+  } @else {
+    <!-- ─────────────────────────────────────────────────────
+         詳細データの表示
+           category() は null チェック済みだが TypeScript は推論できないので
+           non-null assertion (!) で「null ではない」と TS に伝える
+         ───────────────────────────────────────────────────── -->
+    <dl class="detail-grid">
+      <!-- ID -->
+      <dt>ID</dt>
+      <dd>{{ category()!.id }}</dd>
+
+      <!-- カテゴリ名 -->
+      <dt>カテゴリ名</dt>
+      <dd>{{ category()!.name }}</dd>
+
+      <!-- 表示順 (商品一覧でカテゴリを並べる際の順序。小さい値ほど先に表示) -->
+      <dt>表示順</dt>
+      <dd>{{ category()!.displayOrder }}</dd>
+
+      <!-- 作成日 ('yyyy-MM-dd HH:mm' で日付+時刻も表示) -->
+      <dt>作成日</dt>
+      <dd>{{ category()!.createdAt | date:'yyyy-MM-dd HH:mm' }}</dd>
+
+      <!-- 更新日 -->
+      <dt>更新日</dt>
+      <dd>{{ category()!.updatedAt | date:'yyyy-MM-dd HH:mm' }}</dd>
+    </dl>
+
+    <!-- ─────────────────────────────────────────────────────
+         アクションボタン (一覧に戻る / 編集)
+         ───────────────────────────────────────────────────── -->
+    <div class="actions">
+      <!-- 一覧に戻る: SPA 内で /categories へ -->
+      <a mat-stroked-button routerLink="/categories">一覧に戻る</a>
+
+      <!-- 編集: 同じカテゴリの編集画面へ -->
+      <a mat-flat-button color="primary" [routerLink]="['/categories', category()!.id, 'edit']">
+        編集
+      </a>
+    </div>
+  }
+</div>

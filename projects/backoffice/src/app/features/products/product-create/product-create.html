@@ -1,0 +1,166 @@
+<div class="page">
+  <!-- ページヘッダー: タイトルのみ (作成画面なので「新規作成」ボタンは不要) -->
+  <header class="page-header">
+    <h2>商品新規作成</h2>
+  </header>
+
+  <!-- ─────────────────────────────────────────────────────
+       Reactive Forms との結びつけ
+         [formGroup]="form" ... TS クラスの form プロパティとこのフォーム要素を紐付け
+         (ngSubmit)="onSubmit()" ... submit イベント (Enter キーや type=submit ボタン押下) を捕捉
+       ───────────────────────────────────────────────────── -->
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form">
+
+    <!-- ─────────────────────────────────────────────────────
+         商品名 入力欄
+         ───────────────────────────────────────────────────── -->
+    <mat-form-field appearance="outline" class="field">
+      <mat-label>商品名</mat-label>
+      <input matInput type="text" formControlName="name" maxlength="100" />
+
+      @if (form.controls.name.hasError('required')) {
+        <mat-error>商品名は必須です</mat-error>
+      }
+      @if (form.controls.name.hasError('maxlength')) {
+        <mat-error>100文字以下で入力してください</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- ─────────────────────────────────────────────────────
+         説明 入力欄 (任意項目)
+           matInput に textarea を指定すると複数行入力になる
+           rows="3" は初期表示の高さ (3行ぶん)
+         ───────────────────────────────────────────────────── -->
+    <mat-form-field appearance="outline" class="field">
+      <mat-label>説明 (任意)</mat-label>
+      <textarea matInput rows="3" formControlName="description" maxlength="500"></textarea>
+
+      @if (form.controls.description.hasError('maxlength')) {
+        <mat-error>500文字以下で入力してください</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- ─────────────────────────────────────────────────────
+         価格 入力欄
+         ───────────────────────────────────────────────────── -->
+    <mat-form-field appearance="outline" class="field">
+      <mat-label>価格 (円・0以上の整数)</mat-label>
+      <input matInput type="number" formControlName="price" min="0" />
+
+      @if (form.controls.price.hasError('required')) {
+        <mat-error>価格は必須です</mat-error>
+      }
+      @if (form.controls.price.hasError('min')) {
+        <mat-error>0以上の値を入力してください</mat-error>
+      }
+      @if (form.controls.price.hasError('pattern')) {
+        <mat-error>整数で入力してください (小数・負数は不可)</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- ─────────────────────────────────────────────────────
+         画像URL 入力欄 (任意項目)
+         ───────────────────────────────────────────────────── -->
+    <mat-form-field appearance="outline" class="field">
+      <mat-label>画像URL (任意)</mat-label>
+      <input matInput type="text" formControlName="imageUrl" maxlength="500" />
+
+      @if (form.controls.imageUrl.hasError('maxlength')) {
+        <mat-error>500文字以下で入力してください</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- ─────────────────────────────────────────────────────
+         画像ファイル選択 (ローカルから画像をアップロードして上の URL 欄に反映)
+           - URL を直接貼る運用と併存: 上の入力欄を残したまま追加
+           - accept="image/*" でファイル選択ダイアログを画像のみに絞る
+           - アップロード中はスピナー表示で二重アップロード防止
+           - imageUrl に値があるときだけプレビュー <img> を表示
+             (作成画面では初期は空なので、アップロード成功後 or URL 手入力後にだけ出る)
+         ───────────────────────────────────────────────────── -->
+    <div class="upload-field">
+ 
+      <!--
+        (change)="onFileSelected($event)" ... 丸括弧 = イベントバインディング (DOM の change イベント → TS メソッド呼び出し)
+        [disabled]="uploading()"          ... 角括弧 = プロパティバインディング (signal 値を input 要素の disabled に反映)
+        この 2 種のバインディングは同じ要素にいくつでも書ける (Angular テンプレートの基本ルール)
+      -->
+      <input type="file" accept="image/*" (change)="onFileSelected($event)" [disabled]="uploading()" />
+      <!-- アップロード中スピナー: uploading() が true の間だけ表示 -->
+      @if (uploading()) {
+        <span style="display: inline-flex; align-items: center; gap: 8px; margin-left: 8px;">
+          <mat-spinner diameter="20"></mat-spinner>
+          <span>アップロード中…</span>
+        </span>
+      }
+
+      <!-- プレビュー画像: imageUrl に値があるときだけ表示
+             - アップロード成功で patchValue 直後
+             - もしくは URL 欄に手で文字列を貼った場合
+             のどちらでも同じ条件で表示される -->
+      @if (form.controls.imageUrl.value) {
+        <img
+          [src]="form.controls.imageUrl.value"
+          alt="商品画像プレビュー"
+          style="display: block; max-width: 200px; max-height: 200px; object-fit: contain; margin-top: 8px;"
+        />
+      }
+    </div>
+
+    <!-- ─────────────────────────────────────────────────────
+         在庫 入力欄
+         ───────────────────────────────────────────────────── -->
+    <mat-form-field appearance="outline" class="field">
+      <mat-label>在庫 (0以上の整数)</mat-label>
+      <input matInput type="number" formControlName="stock" min="0" />
+
+      @if (form.controls.stock.hasError('required')) {
+        <mat-error>在庫は必須です</mat-error>
+      }
+      @if (form.controls.stock.hasError('min')) {
+        <mat-error>0以上の値を入力してください</mat-error>
+      }
+      @if (form.controls.stock.hasError('pattern')) {
+        <mat-error>整数で入力してください (小数・負数は不可)</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- ─────────────────────────────────────────────────────
+         カテゴリ 選択欄 (mat-select ドロップダウン)
+           <mat-option [value]="..."> が選択肢の1つに相当する
+           [value] は属性バインディング: 数値 (cat.id) を value にセットする
+         ───────────────────────────────────────────────────── -->
+    <mat-form-field appearance="outline" class="field">
+      <mat-label>カテゴリ</mat-label>
+      <mat-select formControlName="categoryId">
+        <!-- カテゴリ選択欄 -->
+        @for(cat of categories(); track cat.id) {
+          <mat-option [value] ="cat.id">{{ cat.name }}</mat-option>
+        }
+      </mat-select>
+
+      @if (form.controls.categoryId.hasError('required')) {
+        <mat-error>カテゴリを選択してください</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- ─────────────────────────────────────────────────────
+         アクションボタン (キャンセル / 作成)
+         ───────────────────────────────────────────────────── -->
+    <div class="actions">
+      <!-- キャンセル: SPA 内で /products へ戻る (RouterLink) -->
+      <a mat-stroked-button routerLink="/products">キャンセル</a>
+
+      <!-- 作成ボタン:
+             type="submit" にすることで <form> の (ngSubmit) を発火させる
+             [disabled]="submitting()" で送信中はクリック不可 (二重送信防止) -->
+      <button mat-flat-button color="primary" type="submit" [disabled]="submitting()">
+        @if (submitting()) {
+          送信中…
+        } @else {
+          作成
+        }
+      </button>
+    </div>
+  </form>
+</div>

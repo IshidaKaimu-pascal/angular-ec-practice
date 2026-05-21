@@ -1,0 +1,122 @@
+<div class="page">
+  <!-- ページヘッダー -->
+  <header class="page-header">
+    <h2>注文履歴</h2>
+  </header>
+
+  <!-- ─────────────────────────────────────────────────────
+       フィルタブロック (4 軸)
+         購入者 select / 開始日 / 終了日 / 支払い方法 select
+         valueChanges 監視は 穴埋め ToDo-1 で実装する
+       ───────────────────────────────────────────────────── -->
+  <div class="filters">
+    <!-- 購入者 (mat-select) -->
+    <!-- [formControl] でリアクティブフォームと双方向バインド
+         null を value にすることで「全ユーザー (絞り込みなし)」を表現 -->
+    <mat-form-field appearance="outline">
+      <mat-label>購入者</mat-label>
+      <mat-select [formControl]="userControl">
+        <mat-option [value]="null">全ユーザー</mat-option>
+        @for (u of users(); track u.id) {
+          <mat-option [value]="u.id">{{ u.name }} ({{ u.email }})</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <!-- 開始日 (matDatepicker) -->
+    <!-- 構成要素 3 つの組み合わせ:
+           <input matDatepicker>          … 入力欄本体
+           <mat-datepicker-toggle>        … カレンダーアイコン (押すとカレンダーが開く)
+           <mat-datepicker #fromPicker>   … カレンダーパネル本体 (テンプレート参照変数で接続)
+         [matDatepicker]="fromPicker" のように、テンプレート参照変数 #fromPicker を相互参照させる -->
+    <mat-form-field appearance="outline">
+      <mat-label>開始日</mat-label>
+      <input matInput [matDatepicker]="fromPicker" [formControl]="dateFromControl">
+      <mat-datepicker-toggle matIconSuffix [for]="fromPicker"></mat-datepicker-toggle>
+      <mat-datepicker #fromPicker></mat-datepicker>
+    </mat-form-field>
+
+    <!-- 終了日 -->
+    <mat-form-field appearance="outline">
+      <mat-label>終了日</mat-label>
+      <input matInput [matDatepicker]="toPicker" [formControl]="dateToControl">
+      <mat-datepicker-toggle matIconSuffix [for]="toPicker"></mat-datepicker-toggle>
+      <mat-datepicker #toPicker></mat-datepicker>
+    </mat-form-field>
+
+    <!-- 支払い方法 (mat-select) -->
+    <mat-form-field appearance="outline">
+      <mat-label>支払い方法</mat-label>
+      <mat-select [formControl]="paymentMethodControl">
+        <mat-option [value]="null">すべて</mat-option>
+        @for (opt of paymentMethodOptions; track opt.value) {
+          <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────
+       3 分岐表示
+         @if (loading())              ... 読み込み中スピナー代わりのテキスト
+         @else if (orders().length === 0) ... 0 件メッセージ
+         @else                        ... mat-table で一覧表示
+       ───────────────────────────────────────────────────── -->
+  @if (loading()) {
+    <p class="status-message">読み込み中…</p>
+  } @else if (orders().length === 0) {
+    <p class="status-message">該当する注文がありません。</p>
+  } @else {
+    <table mat-table [dataSource]="orders()" class="orders-table mat-elevation-z2">
+      <!-- ID -->
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef>ID</th>
+        <td mat-cell *matCellDef="let order">{{ order.id }}</td>
+      </ng-container>
+
+      <!-- 売上日時 -->
+      <ng-container matColumnDef="orderedAt">
+        <th mat-header-cell *matHeaderCellDef>売上日時</th>
+        <td mat-cell *matCellDef="let order">{{ order.orderedAt | date:'yyyy-MM-dd HH:mm' }}</td>
+      </ng-container>
+
+      <!-- 購入者 (include した user.name を表示) -->
+      <ng-container matColumnDef="userName">
+        <th mat-header-cell *matHeaderCellDef>購入者</th>
+        <td mat-cell *matCellDef="let order">{{ order.user?.name ?? '—' }}</td>
+      </ng-container>
+
+      <!-- 商品サマリ (穴埋め ToDo-2 で実装した itemsSummary() を呼ぶ) -->
+      <ng-container matColumnDef="itemsSummary">
+        <th mat-header-cell *matHeaderCellDef>商品</th>
+        <td mat-cell *matCellDef="let order">{{ itemsSummary(order) }}</td>
+      </ng-container>
+
+      <!-- 合計金額 (数字を 3 桁カンマ区切りで表示) -->
+      <ng-container matColumnDef="totalAmount">
+        <th mat-header-cell *matHeaderCellDef>合計</th>
+        <td mat-cell *matCellDef="let order">¥{{ order.totalAmount | number }}</td>
+      </ng-container>
+
+      <!-- 支払い方法 (日本語ラベル化) -->
+      <ng-container matColumnDef="paymentMethod">
+        <th mat-header-cell *matHeaderCellDef>支払い方法</th>
+        <td mat-cell *matCellDef="let order">{{ paymentMethodLabel(order.paymentMethod) }}</td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+  }
+
+  <!-- paginator: 読み込み中以外は常時表示 (0 件でも表示して前ページに戻れるようにする) -->
+  @if (!loading()) {
+    <mat-paginator
+      [length]="total()"
+      [pageSize]="pageSize()"
+      [pageIndex]="pageIndex()"
+      [pageSizeOptions]="[10, 25, 50]"
+      (page)="onPageChange($event)"
+    />
+  }
+</div>

@@ -60,10 +60,17 @@
 
     <div class="cart-actions">
       <a mat-stroked-button routerLink="/">商品一覧に戻る</a>
-      <a mat-flat-button color="primary" routerLink="/checkout">
-        購入手続きへ
+      <!-- Step 7-E-3: <a routerLink> から <button (click)> に変更。 -->
+      <!--   遷移先がサインイン状態で変わるので、TS 側 (proceedToCheckout) で判定する。 -->
+      <!--   ラベルも @if で出し分け: 未サインイン時は「サインインして購入手続きへ」と意図を明示。 -->
+      <button mat-flat-button color="primary" (click)="proceedToCheckout()">
+        @if (authService.signedIn()) {
+          購入手続きへ
+        } @else {
+          サインインして購入手続きへ
+        }
         <mat-icon>arrow_forward</mat-icon>
-      </a>
+      </button>
     </div>
   }
 </div>

@@ -1,7 +1,5 @@
 <!-- 画面上部のナビゲーションバー -->
 <mat-toolbar color="primary">
-  <!-- サイトタイトル兼トップ(商品一覧)へのリンク -->
-  <a mat-button routerLink="/">EC練習</a>
 
   <!-- 中央スペース埋め: flex: 1 で残り幅を全部この span が吸収する -->
   <span style="flex: 1"></span>
@@ -9,7 +7,8 @@
   <!-- カートアイコンボタン -->
   <!-- mat-icon-button: アイコン1つだけを乗せる丸いボタン -->
   <!-- aria-label: スクリーンリーダー用の説明（アイコンだけだと意味が伝わらないため） -->
-  <!-- matBadge: バッジ(数値)を表示する。-->
+  <!-- matBadge: バッジ(数値)を表示する。totalQuantity()===0 のときは matBadgeHidden で自動的に隠れる -->
+  <!-- Step 7-E-2: カートアイコンは @if の外に出して常時表示 (未サインイン時もアイコンは出る、バッジは空なら付かない) -->
   <a mat-icon-button routerLink="/cart" aria-label="カート"
   [matBadge]="cartService.totalQuantity()"
   [matBadgeHidden]="cartService.totalQuantity() === 0"
@@ -18,12 +17,17 @@
     <mat-icon>shopping_cart</mat-icon>
   </a>
 
+  <!-- サインイン状態でツールバー右側の表示を切り替え (Step 7-E-2) -->
+  <!--   サインイン中 → ユーザー名 + プルダウンメニュー -->
+  <!--   未サインイン → 「サインイン」ボタン (routerLink で /sign-in に飛ばす) -->
+  @if (authService.signedIn()) {
   <!-- ユーザー名・ID表示 → クリックでプルダウンメニュー -->
   <!-- [matMenuTriggerFor]="userMenu" のカッコ[] は「プロパティバインディング」。-->
   <!-- userMenu は下の #userMenu="matMenu" で宣言した「テンプレート参照変数」を指す。-->
-  <!-- authService.currentUser() で signal を呼び出して User オブジェクトを取得 -->
+  <!-- authService.currentUser() は Signal<User | null>。signedIn() が true の中なので -->
+  <!-- 実行時には必ず非 null だが、型システムには伝わらないので ?. (Optional chaining) を付ける -->
   <button mat-button [matMenuTriggerFor]="userMenu">
-    {{ authService.currentUser().name }} (ID:{{ authService.currentUser().id }})
+    {{ authService.currentUser()?.name }} (ID:{{ authService.currentUser()?.id }})
     <mat-icon>arrow_drop_down</mat-icon>
   </button>
 
@@ -52,7 +56,18 @@
       <span>サインアウト</span>
     </button>
   </mat-menu>
+  } @else {
+  <!-- 未サインイン時はサインインボタンを表示 (Step 7-E-2) -->
+  <a mat-button routerLink="/sign-in">サインイン</a>
+  }
 </mat-toolbar>
 
-<!-- 各ルートに対応するコンポーネントが描画される場所 -->
-<router-outlet />
+
+<!--
+  各ルートに対応するコンポーネントが描画される場所
+    .content-wrapper でくるんで本文の最大幅を制限し、左右の余白を margin: 0 auto で
+    均等に配ることで、画面が広いときに本文が画面中央に寄るようにする
+-->
+<div class="content-wrapper">
+  <router-outlet />
+</div>
