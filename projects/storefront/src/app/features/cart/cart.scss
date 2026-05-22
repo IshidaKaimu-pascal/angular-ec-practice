@@ -103,3 +103,46 @@ h1 {
   margin-top: 24px;
   gap: 16px;
 }
+
+// ─────────────────────────────────────────────────────
+// スマホ対応 (~600px)
+//   .item-row は「画像 + 情報 + アクション」横並びだが、画面 375px だと
+//   画像 80px を引いた残りで「商品名 + 価格 + 数量増減 + 小計 + 削除」を
+//   詰めるのは無理。画像だけ残して下のテキスト群を改行できるようにする。
+//   .cart-actions ("買い物継続" / "注文へ進む") は space-between だと
+//   ボタン同士がくっつくので縦並びに。
+// ─────────────────────────────────────────────────────
+@media (max-width: 600px) {
+  :host {
+    padding: 16px 12px;
+  }
+
+  .item-row {
+    // 画像とテキストエリアを縦に重ねず、テキスト側を折り返せるように flex-wrap
+    flex-wrap: wrap;
+  }
+
+  .item-info {
+    // 残り幅を全部使い切るよう min-width を 0 に
+    min-width: 0;
+    flex: 1 1 calc(100% - 96px); // 画像 80px + gap 16px を除いた残り
+  }
+
+  .item-actions {
+    // 画像の真下にぶら下げず、明細の右端 1 行に並べたいので
+    // flex-basis: 100% で改行 + 横並び (row) に
+    flex-basis: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .cart-actions {
+    flex-direction: column-reverse; // 「注文へ進む」を上に置く
+    gap: 8px;
+
+    a, button {
+      width: 100%;
+    }
+  }
+}

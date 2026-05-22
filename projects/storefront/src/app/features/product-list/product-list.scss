@@ -134,3 +134,37 @@
 mat-paginator {
   margin-top: 16px;
 }
+
+// ─────────────────────────────────────────────────────
+// スマホ対応 (~600px)
+//   3列固定だとカードが狭すぎて画像/価格が読みづらいので 1列に切り替える。
+//   検索ボックスの 280px 固定は画面からはみ出す原因なので 100% 化。
+//   :host の padding は左右だけ詰めて縦は据え置き (余白の手触りを残す)。
+// ─────────────────────────────────────────────────────
+@media (max-width: 600px) {
+  :host {
+    padding: 16px 12px;
+  }
+
+  .page-header-inner {
+    padding: 20px 16px;
+    gap: 12px;
+  }
+
+  .shop-title {
+    font-size: 1.5rem;
+  }
+
+  .search-field {
+    width: 100%;
+  }
+
+  .product-grid {
+    // 1列に切り替え。画像が大きく表示され、価格・在庫もはっきり見える。
+    grid-template-columns: 1fr;
+  }
+
+  .category-heading {
+    font-size: 1.25rem;
+  }
+}

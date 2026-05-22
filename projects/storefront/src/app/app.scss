@@ -23,3 +23,32 @@ mat-toolbar {
   width: 100%;
   margin: 0 auto;
 }
+
+// ─────────────────────────────────────────────────────
+// スマホ対応 (~600px)
+//   各 feature の :host で padding: 24px 指定が多いが、画面 375px 程度だと
+//   24×2 = 48px もコンテンツ幅から削られるので狭く感じる。
+//   ここで content-wrapper にスマホ専用の左右パディングを足し、
+//   各画面側で個別に padding を縮めるのではなく共通化しても効くようにしておく。
+// ─────────────────────────────────────────────────────
+@media (max-width: 600px) {
+  mat-toolbar {
+    // toolbar の標準高さは 64px → 56px (Material の standard mobile)
+    // padding が左右 16px → 8px くらいに詰まり、アイコン同士の窮屈感を抑える
+    padding-left: 8px;
+    padding-right: 8px;
+
+    // ユーザー名ボタン (mat-button) の余白を詰め、文字サイズを少し縮める。
+    // ID 部分はテキスト中に埋め込まれているため CSS では消せないが、
+    // padding / font-size を絞ることで右側のはみ出しを抑える。
+    button[mat-button],
+    a[mat-button] {
+      padding: 0 8px;
+      min-width: 0;
+      font-size: 0.85rem;
+
+      // 改行されると Material の高さ崩壊が起きるので nowrap
+      white-space: nowrap;
+    }
+  }
+}

@@ -42,3 +42,7 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+# Cloud9 デプロイ用ビルド成果物 (zip)
+/storefront.zip
+/backoffice.zip

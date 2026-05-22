@@ -107,3 +107,34 @@ h1 {
   padding: 48px 0;
   color: #666;
 }
+
+// ─────────────────────────────────────────────────────
+// スマホ対応 (~600px)
+//   .order-line は「画像 + 名前 + 小計」横並び。商品名が長いと小計が
+//   右に押し出されて見切れるので、order-history と同様に折り返す。
+//   .checkout-actions も cart 同様、縦並びに。
+// ─────────────────────────────────────────────────────
+@media (max-width: 600px) {
+  :host {
+    padding: 16px 12px;
+  }
+
+  .order-line {
+    flex-wrap: wrap;
+  }
+
+  .line-name {
+    // 商品名が長い場合に折り返せるよう、最小幅をリセットして 100% 幅
+    flex-basis: 100%;
+    order: 3; // 画像→小計→名前(改行) の順
+  }
+
+  .checkout-actions {
+    flex-direction: column-reverse; // 「注文を確定」を上に
+    gap: 8px;
+
+    a, button {
+      width: 100%;
+    }
+  }
+}
