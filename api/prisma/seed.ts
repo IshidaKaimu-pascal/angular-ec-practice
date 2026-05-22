@@ -180,6 +180,17 @@ async function main() {
         phone: '080-5678-9012',
       },
     }),
+    // 公開デモ用のテストアカウント (Cloud9 デプロイ後の動作確認に使用)
+    prisma.user.create({
+      data: {
+        name: 'テストユーザー',
+        email: 'user@test.jp',
+        password: hashedCustomerPassword,
+        role: 'customer',
+        address: '東京都千代田区0-0-0',
+        phone: '090-0000-0000',
+      },
+    }),
   ]);
 
   // ----------------------------------------------------------
@@ -192,6 +203,14 @@ async function main() {
     data: {
       name: '管理者',
       email: 'admin@test.com',
+      password: hashedAdminPassword,
+    },
+  });
+  // 公開デモ用のテスト admin (Cloud9 デプロイ後の動作確認に使用)
+  await prisma.admin.create({
+    data: {
+      name: 'テスト管理者',
+      email: 'admin@test.jp',
       password: hashedAdminPassword,
     },
   });
@@ -257,13 +276,15 @@ async function main() {
   console.log('シード完了!');
   console.log('  Category : 3 件');
   console.log('  Product  : 9 件');
-  console.log('  User     : 5 件 (customer)');
-  console.log('  Admin    : 1 件');
+  console.log('  User     : 6 件 (customer)');
+  console.log('  Admin    : 2 件');
   console.log('  Order    : 3 件');
   console.log('');
   console.log('ログイン情報:');
-  console.log(`  customer: tanaka@test.com / ${CUSTOMER_PASSWORD} (他4名も同パスワード)`);
+  console.log(`  customer: tanaka@test.com / ${CUSTOMER_PASSWORD} (他5名も同パスワード)`);
+  console.log(`  customer (公開デモ用): user@test.jp / ${CUSTOMER_PASSWORD}`);
   console.log(`  admin   : admin@test.com / ${ADMIN_PASSWORD}`);
+  console.log(`  admin   (公開デモ用): admin@test.jp / ${ADMIN_PASSWORD}`);
 }
 
 // ============================================================
