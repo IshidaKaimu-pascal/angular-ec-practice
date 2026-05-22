@@ -18,8 +18,8 @@
         <!-- ヘッダー部分(常に表示) -->
         <mat-expansion-panel-header>
           <mat-panel-title>
-            <span class="order-id">注文 #{{ order.id }}</span>
-            <span class="order-date">{{ order.orderedAt | date:'yyyy/MM/dd HH:mm' }}</span>
+            <span class="order-id">{{ order.orderedAt | date:'yyyy/MM/dd' }} のご注文</span>
+            <span class="order-date">{{ order.orderedAt | date:'HH:mm' }}</span>
           </mat-panel-title>
           <mat-panel-description>
             <span class="order-total">¥{{ order.totalAmount | number }}</span>
