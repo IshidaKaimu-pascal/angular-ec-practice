@@ -12,6 +12,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 // shared から型を import: Order = 注文1件 / Paged<T> = { items: T[]; total: number }
 import { Order, Paged } from 'shared';
+import { environment } from '../../environments/environment';
 
 // @Injectable: このクラスを Angular の DI(依存注入) システムに登録するデコレータ
 // providedIn: 'root' は「アプリ全体で1つのインスタンスを共有」(シングルトン) の意味
@@ -20,7 +21,7 @@ export class OrderService {
   // inject() 関数で HttpClient を取得 (旧 constructor(private http: HttpClient) の新スタイル)
   private readonly http = inject(HttpClient);
   // API ベース URL (Express サーバーの /orders エンドポイント)
-  private readonly baseUrl = 'http://localhost:3000/orders';
+  private readonly baseUrl = `${environment.apiUrl}/orders`;
 
 
   // ページング + 絞り込み付きで注文一覧を取得

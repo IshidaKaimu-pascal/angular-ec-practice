@@ -47,6 +47,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 import { Admin } from 'shared';
+import { environment } from '../../environments/environment';
 
 // ============================================================
 // API レスポンスの型定義
@@ -75,7 +76,7 @@ export class AuthService {
   // サインアウト後のリダイレクト用に Router を注入
   //   (UI 都合ではなく認証フロー全体のルールなので、ナビゲーションも AuthService に集約)
   private readonly router = inject(Router);
-  private readonly baseUrl = 'http://localhost:3000/auth';
+  private readonly baseUrl = `${environment.apiUrl}/auth`;
 
   // 現在ログイン中の管理者情報を保持する signal
   //   起動時に localStorage に保存済の admin があれば復元、なければ null (未ログイン)

@@ -11,6 +11,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Category, Paged } from 'shared';
+import { environment } from '../../environments/environment';
 
 // ─────────────────────────────────────────────────────
 // Payload 型 (API への送信 body の形)
@@ -42,7 +43,7 @@ export class CategoryService {
   private readonly http = inject(HttpClient);
   // API ベース URL (Express サーバーの /categories エンドポイント)
   // XAMPP は MariaDB だけを動かす役割で、API は Node.js の Express 側 (port 3000)
-  private readonly baseUrl = 'http://localhost:3000/categories';
+  private readonly baseUrl = `${environment.apiUrl}/categories`;
 
 
   // 全カテゴリ一覧を取得して Observable<Category[]> を返す

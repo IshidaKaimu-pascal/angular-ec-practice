@@ -13,6 +13,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 // @Injectable: このクラスを Angular の DI(依存注入) システムに登録するデコレータ
 // providedIn: 'root' は「アプリ全体で1つのインスタンスを共有」(シングルトン)の意味
@@ -21,7 +22,7 @@ export class UploadService {
   // inject() 関数で HttpClient を取得（旧 constructor(private http: HttpClient) の新スタイル）
   private readonly http = inject(HttpClient);
   // API のエンドポイント URL (Express サーバーの /uploads)
-  private readonly baseUrl = 'http://localhost:3000/uploads';
+  private readonly baseUrl = `${environment.apiUrl}/uploads`;
 
   // ─────────────────────────────────────────────────────
   // upload(): File オブジェクトをサーバーに送信し、保存後の URL を受け取る

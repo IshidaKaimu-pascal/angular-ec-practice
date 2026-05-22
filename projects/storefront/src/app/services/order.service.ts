@@ -5,6 +5,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Order, PaymentMethod } from 'shared';
+import { environment } from '../../environments/environment';
 
 // 注文と支払い情報をまとめた型（POST /orders のリクエストボディ）
 // PaymentMethod は shared 側で定義しているのを再利用 → Order レスポンス型と整合する
@@ -18,7 +19,7 @@ export interface CreateOrderPayload {
 @Injectable({ providedIn: 'root' })
 export class OrderService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = 'http://localhost:3000/orders';
+  private readonly baseUrl = `${environment.apiUrl}/orders`;
 
   // 注文を新規作成。サーバー側で Order + OrderItem がネステッドwriteで一括作成される。
   // 引数の型は CreateOrderPayload を利用する

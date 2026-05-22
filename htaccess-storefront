@@ -1,0 +1,32 @@
+# ============================================================
+# storefront 用 .htaccess (Cloud9 上で /var/www/html/.htaccess に配置)
+#
+# 役割: Angular の クライアントサイドルーティング (SPA fallback) 対応
+#   ブラウザで http://ec2-xx/products/5 のように直接アクセスされた場合、
+#   サーバー上には /var/www/html/products/5 というファイルは存在しないため
+#   404 になってしまう。
+#   この .htaccess は「ファイル/ディレクトリが見つからない場合は index.html を返す」
+#   という挙動に書き換え、Angular Router にパスの解釈を委譲する。
+#
+# 配置手順 (Cloud9 上で実行):
+#   sudo cp htaccess-storefront /var/www/html/.htaccess
+# ============================================================
+
+RewriteEngine On
+RewriteBase /
+
+# /api/ と /static/ は Apache 本体の ProxyPass で reverse proxy するので fallback 対象外
+# /backoffice/ も独立した SPA なので除外 (/var/www/html/backoffice/.htaccess 側で扱う)
+RewriteCond %{REQUEST_URI} !^/api/
+RewriteCond %{REQUEST_URI} !^/static/
+RewriteCond %{REQUEST_URI} !^/backoffice/
+
+# 既存のファイルやディレクトリでない場合のみ /index.html に書き換える
+#   -f: ファイルが存在しないか
+#   -d: ディレクトリが存在しないか
+# 例:
+#   /products/5    → ファイル無し → /index.html を返す (Angular Router が解釈)
+#   /assets/x.png  → ファイル有り → そのまま配信 (fallback しない)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.html [L]

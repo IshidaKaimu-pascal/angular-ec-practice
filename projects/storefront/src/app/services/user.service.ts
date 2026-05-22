@@ -5,6 +5,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { User } from 'shared';
+import { environment } from '../../environments/environment';
 
 // ユーザー更新時に送るリクエストボディの型。
 // すべて optional (?) にして「変更したいフィールドだけ送る」設計にする(部分更新)。
@@ -21,7 +22,7 @@ export interface UpdateUserPayload {
 @Injectable({ providedIn: 'root' })
 export class UserService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = 'http://localhost:3000/users';
+  private readonly baseUrl = `${environment.apiUrl}/users`;
 
   // ユーザー情報を取得（GET /users/:id）
   getById(id: number): Observable<User>{

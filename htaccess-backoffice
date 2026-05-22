@@ -1,0 +1,27 @@
+# ============================================================
+# backoffice 用 .htaccess (Cloud9 上で /var/www/html/backoffice/.htaccess に配置)
+#
+# 役割: Angular SPA fallback (backoffice 版)
+#   storefront と分けている理由:
+#     - backoffice は /backoffice/ 配下に配置するため base href が異なる
+#     - fallback 先も /backoffice/index.html (storefront とは別)
+#
+# 配置手順 (Cloud9 上で実行):
+#   sudo cp htaccess-backoffice /var/www/html/backoffice/.htaccess
+#
+# ⚠️ ng build 時に必ず --base-href=/backoffice/ を付けること
+#   付けないと <base href="/"> のままになり、リロード時にアセット読込が壊れる
+# ============================================================
+
+RewriteEngine On
+RewriteBase /backoffice/
+
+# 既存のファイルやディレクトリでない場合のみ /backoffice/index.html に書き換える
+#   -f: ファイルが存在しないか
+#   -d: ディレクトリが存在しないか
+# 例:
+#   /backoffice/products      → ファイル無し → /backoffice/index.html (Angular Router へ)
+#   /backoffice/assets/x.png  → ファイル有り → そのまま配信
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /backoffice/index.html [L]

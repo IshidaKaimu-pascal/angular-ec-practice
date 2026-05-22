@@ -13,12 +13,21 @@ const PORT = process.env.PORT ?? 3000;
 
 // ============================================================
 // ミドルウェア
-//   - cors: Angular側 (4200/4201) からのリクエストを許可
+//   - cors: 環境変数 CORS_ORIGIN で指定したオリジンからのリクエストを許可
+//           (カンマ区切りで複数指定可。未指定時は localhost:4200/4201 を許可)
+//           Cloud9 等の本番環境では .env で CORS_ORIGIN=http://ec2-xx.compute.amazonaws.com のように設定
 //   - express.json: リクエストボディのJSONを自動でパース
 // ============================================================
+const corsOrigins = (
+  process.env.CORS_ORIGIN ?? 'http://localhost:4200,http://localhost:4201'
+)
+  .split(',')
+  .map((s) => s.trim())
+  .filter((s) => s.length > 0);
+
 app.use(
   cors({
-    origin: ['http://localhost:4200', 'http://localhost:4201'],
+    origin: corsOrigins,
   })
 );
 app.use(express.json());

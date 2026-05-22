@@ -80,7 +80,13 @@ const upload = multer({
 // ────────────────────────────────────────────────
 // POST /uploads
 //   フィールド名 "file" の単一ファイルを受け取る (form-data 必須)
-//   レスポンス: { url: "http://localhost:3000/static/uploads/xxx.jpg" }
+//   レスポンス: { url: "<STATIC_URL_BASE>/static/uploads/xxx.jpg" }
+//
+//   STATIC_URL_BASE 環境変数で URL のプレフィックスを切替:
+//     - 未設定: 'http://localhost:3000' をデフォルト (ローカル開発時の従来動作)
+//     - 空文字 (例: STATIC_URL_BASE= ): '/static/uploads/xxx.jpg' のような相対 URL を返す
+//                                       (Cloud9 等の Apache reverse proxy 配下を想定)
+//     - 任意の値: その値を先頭に付ける (例: 別ドメインの CDN を使う等の発展用)
 //
 //   TODO (将来課題): admin 認証を追加 (現状は誰でもアップロード可)
 // ────────────────────────────────────────────────
@@ -95,10 +101,14 @@ router.post(
         return;
       }
 
+      // ?? は左辺が undefined/null のときだけ右辺を使う Null 合体演算子
+      //   STATIC_URL_BASE= (空文字) を本番用として明示指定したいので
+      //   || ではなく ?? を使う (|| だと空文字でも fallback してしまう)
+      const staticUrlBase = process.env.STATIC_URL_BASE ?? 'http://localhost:3000';
       // URL を組み立てて返す
-      const url = `http://localhost:3000/static/uploads/${req.file.filename}`;
+      const url = `${staticUrlBase}/static/uploads/${req.file.filename}`;
       res.status(201).json({ url });
-      
+
     } catch (err) {
       next(err); // Express の共通エラーハンドラ (index.ts) に渡す
     }

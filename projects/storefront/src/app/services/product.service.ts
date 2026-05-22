@@ -9,6 +9,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Product } from 'shared';
+import { environment } from '../../environments/environment';
 
 // @Injectable: このクラスを Angular の DI(依存注入) システムに登録するデコレータ
 // providedIn: 'root' は「アプリ全体で1つのインスタンスを共有」(シングルトン)の意味
@@ -16,7 +17,7 @@ import { Product } from 'shared';
 export class ProductService {
   // inject() 関数で HttpClient を取得（旧 constructor(private http: HttpClient) の新スタイル）
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = 'http://localhost:3000/products';
+  private readonly baseUrl = `${environment.apiUrl}/products`;
 
   // 全商品一覧を取得
   // 戻り値の Observable<Product[]> は「将来的に Product[] が流れてくるストリーム」

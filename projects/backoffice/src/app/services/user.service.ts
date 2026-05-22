@@ -13,6 +13,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { User, UserRole, Paged } from 'shared';
+import { environment } from '../../environments/environment';
 
 // ─────────────────────────────────────────────────────
 // Payload 型 (API への送信 body の形)
@@ -55,7 +56,7 @@ export class UserService {
   // inject() 関数で HttpClient を取得（旧 constructor(private http: HttpClient) の新スタイル）
   private readonly http = inject(HttpClient);
   // API ベース URL (Express サーバーの /users エンドポイント)
-  private readonly baseUrl = 'http://localhost:3000/users';
+  private readonly baseUrl = `${environment.apiUrl}/users`;
 
 
   // 全ユーザー一覧を取得して Observable<User[]> を返す

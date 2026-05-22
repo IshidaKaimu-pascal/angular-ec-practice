@@ -11,6 +11,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Product, Paged } from 'shared';
+import { environment } from '../../environments/environment';
 
 // ─────────────────────────────────────────────────────
 // Payload 型 (API への送信 body の形)
@@ -49,7 +50,7 @@ export class ProductService {
   // inject() 関数で HttpClient を取得（旧 constructor(private http: HttpClient) の新スタイル）
   private readonly http = inject(HttpClient);
   // API ベース URL (Express サーバーの /products エンドポイント)
-  private readonly baseUrl = 'http://localhost:3000/products';
+  private readonly baseUrl = `${environment.apiUrl}/products`;
 
 
   // 全商品一覧を取得して Observable<Product[]> を返す
