@@ -1,7 +1,7 @@
 {
   "name": "api",
   "version": "1.0.0",
-  "description": "EC practice project - REST API (Express + Prisma + SQLite)",
+  "description": "EC practice project - REST API (Express + Prisma + MariaDB)",
   "main": "dist/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
