@@ -1,5 +1,14 @@
 <div class="history-container">
-  <h1>購入履歴</h1>
+  <!-- 見出し行: タイトル + 「商品一覧へ戻る」ボタンを横並びに配置 -->
+  <!-- history-header クラスは flex 配置で左右に振り分け (CSS 側で対応) -->
+  <div class="history-header">
+    <h1>購入履歴</h1>
+    <a mat-stroked-button color="primary" routerLink="/">
+      <mat-icon>arrow_back</mat-icon>
+      商品一覧へ戻る
+    </a>
+  </div>
+
   <!-- mat-accordion: 複数の expansion-panel をまとめるラッパー -->
   <!-- multi: 複数同時展開を許可するか(falseだと1つ開くと他が閉じる)。デフォルトは false -->
   <mat-accordion multi>

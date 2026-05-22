@@ -37,10 +37,19 @@ router.get('/', async (req: Request, res: Response, next: NextFunction) => {
     }
 
     // findMany の共通オプション (paginated / 非paginated で同じ条件を使うため切り出し)
+    //
+    // orderBy は配列で「複数キーソート」を指定できる (左から優先度高)。
+    //   ① categoryId 昇順 … カテゴリごとに商品が連続して並ぶ (毛糸=1 → 布地=2 → 道具=3)
+    //   ② id 昇順         … 同カテゴリ内では追加順 (seed.ts の並び順) を保つ
+    // これにより storefront 一覧が 6 件/ページのとき「毛糸6 → 布地6 → 道具6」と
+    // カテゴリごとに 1 ページずつ綺麗にまとまる。
     const queryBase = {
       where,
       include: { category: true }, // カテゴリ情報も一緒に取得
-      orderBy: { id: 'asc' as const },
+      orderBy: [
+        { categoryId: 'asc' as const },
+        { id: 'asc' as const },
+      ],
     };
 
     // ─── ページングモードの判定 ───

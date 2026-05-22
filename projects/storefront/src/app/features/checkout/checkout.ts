@@ -9,6 +9,9 @@ import { MatCardModule } from '@angular/material/card';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
+// MatSnackBar: Material のトースト通知サービス。画面下にメッセージを一定時間表示する
+//   open(message, action, config) で起動。MatSnackBarModule の import は不要 (サービスのみ)。
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { PaymentMethod } from 'shared';
 import { CartService } from '../../services/cart.service';
 import { AuthService } from '../../services/auth.service';
@@ -36,6 +39,10 @@ export class Checkout {
   private readonly orderService = inject(OrderService);
   // Router: プログラム的なページ遷移用（注文確定後に /orders へ飛ばす）
   private readonly router = inject(Router);
+  // MatSnackBar: 注文確定後の完了メッセージ表示用
+  //   .open() は overlay (画面とは別の最前面レイヤー) にメッセージを描画するため、
+  //   router.navigate でルート切替してもスナックバーは消えずに残る。
+  private readonly snackBar = inject(MatSnackBar);
 
   // ─────────────────────────────────────────────────────
   // Reactive Forms: FormGroup でフォーム全体を、FormControl で各入力を定義
@@ -89,6 +96,11 @@ export class Checkout {
       next: () => {
         // 成功: カートを空にして購入履歴画面へ遷移
         this.cartService.clear();
+        // 完了メッセージを 4 秒間表示。
+        //   第1引数: 表示するメッセージ本文
+        //   第2引数: アクションボタンのラベル ('閉じる' で手動クローズ可能に)
+        //   第3引数: 表示時間など。duration はミリ秒指定
+        this.snackBar.open('ご購入ありがとうございました', '閉じる', { duration: 4000 });
         this.router.navigate(['/orders']);
       },
       error: (err) => {
