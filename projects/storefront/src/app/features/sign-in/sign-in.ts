@@ -20,9 +20,18 @@ import {
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { AuthService } from '../../services/auth.service';
+
+// ============================================================
+// デモアカウント (公開デモ用・提出時の動作確認用)
+//   seed.ts で同じ email/password の User を投入済み。
+//   ここの値を変える時は api/prisma/seed.ts の対応ユーザーも合わせる。
+// ============================================================
+const DEMO_EMAIL = 'user@test.jp';
+const DEMO_PASSWORD = 'password123';
 
 // ============================================================
 // SignIn: サインイン (ログイン) 画面のコンポーネント
@@ -42,6 +51,7 @@ import { AuthService } from '../../services/auth.service';
     RouterLink,
     MatButtonModule,
     MatCardModule,
+    MatDividerModule,
     MatFormFieldModule,
     MatInputModule,
   ],
@@ -77,6 +87,27 @@ export class SignIn {
 
   // サーバーから返ったエラーメッセージ (null なら未エラー = 非表示)
   protected readonly errorMessage = signal<string | null>(null);
+
+  // テンプレート側で表示するデモアカウント情報
+  //   HTML から {{ demoEmail }} のように参照できるよう protected で公開する
+  protected readonly demoEmail = DEMO_EMAIL;
+  protected readonly demoPassword = DEMO_PASSWORD;
+
+  // ============================================================
+  // onDemoSignIn: 「デモアカウントでサインイン」ボタン用
+  //   フォームにデモアカウントの値を流し込んでから onSubmit() を呼ぶことで、
+  //   通常のサインインフロー (AuthService.signIn → API 呼び出し → 遷移) を流用する。
+  //   既に submitting 中なら無視 (二重押下防止)。
+  // ============================================================
+  protected onDemoSignIn(): void {
+    if (this.submitting()) return;
+    // setValue: フォーム全フィールドを一括更新 (patchValue と違い全項目必須)
+    this.form.setValue({
+      email: DEMO_EMAIL,
+      password: DEMO_PASSWORD,
+    });
+    this.onSubmit();
+  }
 
   // ============================================================
   // onSubmit: 送信ボタンが押された時の処理

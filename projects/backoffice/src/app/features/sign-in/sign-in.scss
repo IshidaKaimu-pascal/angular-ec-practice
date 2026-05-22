@@ -42,3 +42,42 @@
   padding: 8px 16px 16px;
   font-size: 14px;
 }
+
+// ----------------------------------------------------------
+// デモアカウントエリア (storefront 側と同じスタイル)
+//   通常のサインインから視覚的に区切るため上に divider + マージン。
+//   背景を薄いグレーにして「デモ用の補助エリア」とひと目で分かるようにする。
+// ----------------------------------------------------------
+.demo-divider {
+  margin: 20px 0 16px;
+}
+
+.demo-section {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  padding: 12px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+}
+
+.demo-button {
+  width: 100%;
+}
+
+.demo-credentials {
+  font-size: 12px;
+  color: #555;
+  text-align: center;
+  line-height: 1.6;
+
+  code {
+    background-color: #fff;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-family: 'Consolas', 'Menlo', monospace;
+    font-size: 12px;
+    color: #333;
+  }
+}

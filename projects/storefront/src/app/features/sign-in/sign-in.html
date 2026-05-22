@@ -74,6 +74,29 @@
         }
         </button>
 
+        <!-- ============================================================ -->
+        <!-- デモアカウントエリア                                            -->
+        <!--   提出/動作確認時にアカウント作成不要で試せるようにするための導線。    -->
+        <!--   ボタンは type="button" にして submit を発火させない (デフォルト submit になるのを防ぐ) -->
+        <!--   ボタン押下で TS 側の onDemoSignIn() がフォームに値を入れて onSubmit() を呼ぶ -->
+        <!-- ============================================================ -->
+        <mat-divider class="demo-divider"></mat-divider>
+        <div class="demo-section">
+          <button
+            mat-stroked-button
+            type="button"
+            color="primary"
+            class="demo-button"
+            [disabled]="submitting()"
+            (click)="onDemoSignIn()"
+          >
+            デモアカウントでサインイン
+          </button>
+          <div class="demo-credentials">
+            <div>email: <code>{{ demoEmail }}</code></div>
+            <div>password: <code>{{ demoPassword }}</code></div>
+          </div>
+        </div>
 
       </form>
     </mat-card-content>
